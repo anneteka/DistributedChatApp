@@ -32,7 +32,7 @@ public class MessageSender implements Runnable {
         System.out.println("sender started");
         do {
             try {
-                sendMessage("GREETINGS");
+                sendMessage("joined chat");
                 connected = true;
             } catch (Exception e) {
 

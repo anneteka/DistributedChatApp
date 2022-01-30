@@ -1,3 +1,7 @@
+package node;
+
+import lombok.Getter;
+
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -7,7 +11,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 
-public class MainServer extends Thread {
+@Getter
+public class ServerNode extends Thread {
     public final static int PORT = 8080;
     private final static int BUFFER = 1024;
 
@@ -15,8 +20,9 @@ public class MainServer extends Thread {
     private final ArrayList<InetAddress> clientAddresses;
     private final ArrayList<Integer> clientPorts;
     private final HashSet<String> existingClients;
+    private String hostname;
 
-    public MainServer() throws IOException {
+    public ServerNode() throws IOException {
         socket = new DatagramSocket(PORT);
         clientAddresses = new ArrayList<>();
         clientPorts = new ArrayList<>();
@@ -26,7 +32,8 @@ public class MainServer extends Thread {
     public void run() {
         byte[] buf = new byte[BUFFER];
         try {
-            System.out.println("Chat server started on host "+InetAddress.getLocalHost().getHostName());
+            hostname = InetAddress.getLocalHost().getHostName();
+            System.out.println("Chat server started on host "+ hostname);
         } catch (UnknownHostException e) {
             e.printStackTrace();
         }
@@ -63,7 +70,7 @@ public class MainServer extends Thread {
     }
 
     public static void main(String[] args) throws Exception {
-        var s = new MainServer();
+        var s = new ServerNode();
         s.start();
     }
 }
