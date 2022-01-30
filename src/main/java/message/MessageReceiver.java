@@ -13,6 +13,7 @@ public class MessageReceiver implements Runnable {
     }
 
     public void run() {
+        System.out.println("reciever started");
         while (true) {
             try {
                 DatagramPacket packet = new DatagramPacket(buffer, buffer.length);

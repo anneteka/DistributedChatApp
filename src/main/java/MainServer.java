@@ -2,6 +2,7 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -24,6 +25,11 @@ public class MainServer extends Thread {
 
     public void run() {
         byte[] buf = new byte[BUFFER];
+        try {
+            System.out.println("Chat server started on host "+InetAddress.getLocalHost().getHostName());
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        }
         while (true) {
             try {
                 Arrays.fill(buf, (byte) 0);
