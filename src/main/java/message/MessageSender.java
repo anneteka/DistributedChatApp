@@ -18,16 +18,21 @@ public class MessageSender implements Runnable {
 
     private void sendMessage(String s) throws Exception {
         byte buffer[] = s.getBytes();
-        InetAddress address = InetAddress.getByName(hostname);
-        DatagramPacket packet = new DatagramPacket(buffer, buffer.length, address, PORT);
-        socket.send(packet);
+        try {
+            InetAddress address = InetAddress.getByName(hostname);
+            DatagramPacket packet = new DatagramPacket(buffer, buffer.length, address, PORT);
+            socket.send(packet);
+        } catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     public void run() {
         boolean connected = false;
+        System.out.println("sender started");
         do {
             try {
-                sendMessage("GREETINGS");
+                sendMessage("joined chat");
                 connected = true;
             } catch (Exception e) {
 
