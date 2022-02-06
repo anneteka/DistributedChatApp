@@ -7,7 +7,7 @@ public class MainApp {
         Node appNode = new Node();
         // set hostname here
         // should be set automatically sometime after connecting to the network
-        appNode.setHostname("DESKTOP-8DHRR0H");
-        appNode.becomeClient();
+        appNode.joinNetwork();
+        appNode.connectToServer();
     }
 }
