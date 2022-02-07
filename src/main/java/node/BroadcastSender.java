@@ -18,7 +18,7 @@ public class BroadcastSender{
 	private static DatagramSocket socket;
 	private static int port = 5024;
 	
-	public static void broadcast(String message, String address) {
+	public void broadcast() {
 		try {
 			socket = new DatagramSocket();
 			socket.setBroadcast(true);
