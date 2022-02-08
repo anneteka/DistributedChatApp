@@ -4,13 +4,10 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.List;
-import java.util.Objects;
 
 
 public class BroadcastListener extends Thread{
@@ -35,26 +32,36 @@ public class BroadcastListener extends Thread{
 	public void run() {
         running = true;     
         try {
-            while (running) {              
+            while (running) {        
+				String responseMessage = "";   
+				Boolean selfmessage = false;   
                 DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
                 socket.receive(packet);
-                //String[] received = new String(packet.getData(), 0, packet.getLength()).split(";"); message splitter
                 String received = new String(packet.getData(), 0, packet.getLength());
                 InetAddress address = packet.getAddress();
                 String ip = address.getHostAddress();
                 System.out.println("Message recieved: " + received + " from: " + ip);
                 System.out.println("Current Neighbours: " + neighbours);
-                if (neighbours.contains(ip)) {
-                	continue;
-                }
-                else {
-                	neighbours.add(ip);
-                    System.out.println(ip + " added to the Neighbours List");
-                    String responseMessage = getIPAddressList().toString();
-				    byte[] msg = responseMessage.getBytes();
+				List<InetAddress> ipaddressesses = Helper.getIPAddressList();
+				if(neighbours.contains(ip) && !address.isMulticastAddress()) {
+					continue;
+				}
+				for(int i = 0;i<ipaddressesses.size(); i++)
+				{
+					if (ipaddressesses.get(i).getHostAddress().equals(ip)){
+						selfmessage = true;
+						break;
+					}
+					else
+						responseMessage = ipaddressesses.get(i).getHostAddress();
+				}
+				if(selfmessage == false) {
+					neighbours.add(ip);
+					System.out.println(ip + " added to the Neighbours List");
+					byte[] msg = responseMessage.getBytes();
 					sendResponse(responseMessage, InetAddress.getByName(ip), msg);
-                }
-            }
+				}
+			}
         }
         catch (SocketException ex) {
             System.out.println("Socket error: " + ex.getMessage());
@@ -74,23 +81,8 @@ public class BroadcastListener extends Thread{
     private static void sendResponse(String Message, InetAddress address, byte[] msg)
 			throws UnknownHostException, IOException {
 		DatagramPacket packet = new DatagramPacket(msg, msg.length, address, port);	
-		System.out.println("Responding " + Message + " to " + address);
+		System.out.println("Responding " + Message + " to " + address.getHostAddress());
 		socket.send(packet);
 	}
 
-    private static List<InetAddress> getIPAddressList() throws SocketException {
-		List<InetAddress> addressList = new ArrayList<>();
-		Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
-		while (interfaces.hasMoreElements()) {
-			NetworkInterface networkInterface = interfaces.nextElement();
-			if (networkInterface.isLoopback() || !networkInterface.isUp()) {
-				continue;
-			}
-			networkInterface.getInterfaceAddresses().stream()
-				.map(a -> a.getAddress())
-				.filter(Objects::nonNull)
-				.forEach(addressList::add);
-		}
-		return addressList;
-	}
 }

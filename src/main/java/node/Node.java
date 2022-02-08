@@ -31,8 +31,16 @@ public class Node {
     }
 
     public void broadcast() {
-        bcsender.broadcast();
-        bclistener.run();
+        bcsender = new BroadcastSender();
+        bclistener = new BroadcastListener();
+        Thread senderThread = new Thread(() -> {
+            bcsender.broadcast();
+        });      
+        Thread listenerThread = new Thread(() -> {
+            bclistener.run();
+        });
+        senderThread.start();
+        listenerThread.start();
     }
 
     public void becomeServer() throws IOException {
