@@ -1,11 +1,16 @@
 package node.examples;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import java.net.*;
 import java.io.*;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.*;
-
+/*
 public class FifoProcessWIP {
 
     // Min and max delays for the delay
@@ -406,3 +411,35 @@ public class FifoProcessWIP {
         startClient(id, info[1], Integer.parseInt(info[2]));
     }
 }
+
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+class Message {
+    private String message;
+    private int timestamp;
+    private int source;
+    private MetaData metaData;
+
+    public Message(int time, String msg, int id) {
+        this.timestamp = time;
+        message = msg;
+        this.source = id;
+        metaData = null;
+    }
+
+    public void setData(MetaData data) {
+        this.metaData = data;
+    }
+}
+
+@Getter
+@Setter
+@AllArgsConstructor
+class MetaData implements java.io.Serializable {
+    private String[] process;
+    private transient Socket socket;
+    private transient ObjectOutputStream writer;
+    private boolean open;
+}
+*/

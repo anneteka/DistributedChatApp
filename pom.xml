@@ -13,6 +13,12 @@
             <artifactId>lombok</artifactId>
             <version>1.18.22</version>
         </dependency>
+        <dependency>
+            <groupId>org.jgroups</groupId>
+            <artifactId>jgroups</artifactId>
+            <version>5.2.0.Final</version>
+        </dependency>
+
     </dependencies>
 
     <properties>

@@ -5,26 +5,44 @@ import java.io.InputStreamReader;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.util.LinkedList;
 
-public class MessageSender implements Runnable {
+public class ClientMessageSender implements Runnable {
     public final static int PORT = 8080;
     private final DatagramSocket socket;
     private final String hostname;
+    private final String clientId;
+    private final String username;
+    private LinkedList<Message> queue;
 
-    public MessageSender(DatagramSocket s, String h) {
+    public ClientMessageSender(DatagramSocket s, String h, String clientId, String username) {
         socket = s;
         hostname = h;
+        this.clientId = clientId;
+        this.username = username;
     }
 
-    private void sendMessage(String s) throws Exception {
-        byte buffer[] = s.getBytes();
+    private void sendMessage(String s) {
+        byte[] buffer = s.getBytes();
+        sendMsg(buffer);
+    }
+
+    private void sendMessage(Message message){
+        sendMsg(message.toByteArray());
+    }
+
+    private void sendMsg(byte[] buffer) {
         try {
             InetAddress address = InetAddress.getByName(hostname);
             DatagramPacket packet = new DatagramPacket(buffer, buffer.length, address, PORT);
             socket.send(packet);
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public void sendAcknowledgement(MessageAcknowledgement ack) {
+        sendMsg(ack.toByteArray());
     }
 
     public void run() {
@@ -32,7 +50,7 @@ public class MessageSender implements Runnable {
         System.out.println("sender started");
         do {
             try {
-                sendMessage("joined chat");
+                sendMessage(username+" joined chat");
                 connected = true;
             } catch (Exception e) {
 
@@ -44,9 +62,11 @@ public class MessageSender implements Runnable {
                 while (!in.ready()) {
                     Thread.sleep(100);
                 }
-                sendMessage(in.readLine());
+                String msg = in.readLine();
+                sendMessage(new Message("generated-message-id", msg, "server-id", clientId, username));
+                // todo acknowledgement here
             } catch (Exception e) {
-                System.err.println(e);
+                e.printStackTrace();
             }
         }
     }
