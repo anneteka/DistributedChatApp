@@ -16,6 +16,8 @@ public class Node {
     private Role role;
     private MessageReceiver receiver;
     private MessageSender sender;
+    private BroadcastListener bclistener;
+    private BroadcastSender bcsender;
     private ServerNode serverNode;
     private ClientNode clientNode;
     private String hostname;
@@ -26,6 +28,19 @@ public class Node {
 
     public void pingNode(){
 
+    }
+
+    public void broadcast() {
+        bcsender = new BroadcastSender();
+        bclistener = new BroadcastListener();
+        Thread senderThread = new Thread(() -> {
+            bcsender.broadcast();
+        });      
+        Thread listenerThread = new Thread(() -> {
+            bclistener.run();
+        });
+        senderThread.start();
+        listenerThread.start();
     }
 
     public void becomeServer() throws IOException {
