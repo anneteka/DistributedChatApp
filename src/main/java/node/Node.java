@@ -88,10 +88,6 @@ public class Node {
 
     }
 
-    public void broadcast() {
-
-    }
-
     public void showMessage(message.Message msg) {
 
     }
