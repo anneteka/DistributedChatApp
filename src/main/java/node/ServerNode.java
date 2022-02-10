@@ -76,9 +76,4 @@ public class ServerNode {
 //            }
 //        }
 //    }
-
-    public static void main(String[] args) throws Exception {
-        var s = new ServerNode();
-//        s.start();
-    }
 }

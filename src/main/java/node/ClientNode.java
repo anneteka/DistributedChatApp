@@ -18,13 +18,4 @@ public class ClientNode{
         Thread st = new Thread(s);
         rt.start(); st.start();
     }
-
-    public static void main(String[] args) throws Exception {
-        //hostname of the server should be entered here. hostname is printed into the console after the server started
-        String host = "DESKTOP-8DHRR0H";
-        ClientNode node = new ClientNode();
-        InetAddress address = InetAddress.getByName(host);
-        node.start(host, "test-client-node-"+ (new Random()).nextInt(), "test-user-1", address);
-        System.out.println("client instance started");
-    }
 }
