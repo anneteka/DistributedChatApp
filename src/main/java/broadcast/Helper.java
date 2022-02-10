@@ -1,4 +1,4 @@
-package node;
+package broadcast;
 
 import java.net.InetAddress;
 import java.net.NetworkInterface;
