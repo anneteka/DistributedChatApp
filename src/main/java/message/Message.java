@@ -12,7 +12,6 @@ import java.io.*;
 public class Message {
     private String id;
     private String msg;
-    private String receiverId;
     private String senderId;
     private String senderUsername;
 
@@ -21,7 +20,6 @@ public class Message {
         try (ObjectInput in = new ObjectInputStream(bis)) {
             Message m = (Message) in.readObject();
             this.msg = m.getMsg();
-            this.receiverId = m.getReceiverId();
             this.senderId = m.getSenderId();
             this.senderUsername = m.getSenderUsername();
         } catch (IOException | ClassNotFoundException e) {

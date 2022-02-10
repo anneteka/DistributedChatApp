@@ -7,6 +7,7 @@ import message.ClientMessageReceiver;
 import message.ClientMessageSender;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.SocketException;
 
 @AllArgsConstructor
@@ -21,6 +22,7 @@ public class Node {
     private String hostname;
     private String deviceId;
     private String username;
+    private InetAddress serverAddress;
 
     public Node() {
         role = Role.undecided;
@@ -28,7 +30,7 @@ public class Node {
 
     public Node(
             Role role, ClientMessageReceiver receiver, ClientMessageSender sender, ServerNode serverNode,
-            ClientNode clientNode, String hostname, String deviceId
+            ClientNode clientNode, String hostname, String deviceId, InetAddress address
     ) {
         this.role = role;
         this.receiver = receiver;
@@ -37,6 +39,7 @@ public class Node {
         this.clientNode = clientNode;
         this.hostname = hostname;
         this.deviceId = deviceId;
+        this.serverAddress = address;
     }
 
     public void pingNode() {
@@ -57,7 +60,7 @@ public class Node {
             clientNode = new ClientNode();
         }
         // whatever will do smth better later
-        clientNode.start(hostname, deviceId, username);
+        clientNode.start(hostname, deviceId, username, serverAddress);
     }
 
     public void initiateVoting() {

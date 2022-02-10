@@ -12,8 +12,8 @@ import java.io.*;
 @AllArgsConstructor
 @NoArgsConstructor
 public class MessageAcknowledgement {
-    String messageId;
-    String clientId;
+    private String messageId;
+    private String clientId;
 
     public MessageAcknowledgement(byte[] fromArray) {
         ByteArrayInputStream bis = new ByteArrayInputStream(fromArray);

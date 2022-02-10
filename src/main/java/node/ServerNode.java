@@ -30,8 +30,7 @@ public class ServerNode {
         clientPorts = new ArrayList<>();
         existingClients = new HashSet<>();
         DatagramSocket socket = new DatagramSocket();
-        HashMap<String, LinkedList<Message>> msgQueue = new HashMap<>();
-        ServerMessageSender s = new ServerMessageSender(socket, msgQueue);
+        ServerMessageSender s = new ServerMessageSender(socket);
         ServerMessageReceiver r = new ServerMessageReceiver(socket, s);
         Thread rt = new Thread(r);
         Thread st = new Thread(s);

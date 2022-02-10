@@ -47,6 +47,9 @@ public class ServerMessageReceiver implements Runnable {
                 if (msg != null) {
                     sender.addMessage(msg);
                 }
+                if (ack != null){
+                    sender.removeMessage(ack.getClientId(), ack.getMessageId());
+                }
 
 
             } catch (Exception e) {

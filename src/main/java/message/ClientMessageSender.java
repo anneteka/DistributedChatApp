@@ -1,5 +1,10 @@
 package message;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.DatagramPacket;
@@ -7,19 +12,24 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.util.LinkedList;
 
+@Getter
+@Setter
+@AllArgsConstructor
 public class ClientMessageSender implements Runnable {
     public final static int PORT = 8080;
     private final DatagramSocket socket;
-    private final String hostname;
+    private String hostname;
     private final String clientId;
     private final String username;
     private LinkedList<Message> queue;
+    private InetAddress serverAddress;
 
-    public ClientMessageSender(DatagramSocket s, String h, String clientId, String username) {
+    public ClientMessageSender(DatagramSocket s, String h, String clientId, String username, InetAddress server) {
         socket = s;
         hostname = h;
         this.clientId = clientId;
         this.username = username;
+        serverAddress = server;
     }
 
     private void sendMessage(String s) {
@@ -33,8 +43,7 @@ public class ClientMessageSender implements Runnable {
 
     private void sendMsg(byte[] buffer) {
         try {
-            InetAddress address = InetAddress.getByName(hostname);
-            DatagramPacket packet = new DatagramPacket(buffer, buffer.length, address, PORT);
+            DatagramPacket packet = new DatagramPacket(buffer, buffer.length, serverAddress, PORT);
             socket.send(packet);
         } catch (Exception e) {
             e.printStackTrace();
@@ -63,7 +72,7 @@ public class ClientMessageSender implements Runnable {
                     Thread.sleep(100);
                 }
                 String msg = in.readLine();
-                sendMessage(new Message("generated-message-id", msg, "server-id", clientId, username));
+                sendMessage(new Message("generated-message-id", msg, clientId, username));
                 // todo acknowledgement here
             } catch (Exception e) {
                 e.printStackTrace();
