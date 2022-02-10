@@ -1,4 +1,4 @@
-package node;
+package broadcast;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
