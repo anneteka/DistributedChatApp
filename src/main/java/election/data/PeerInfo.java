@@ -7,6 +7,7 @@ import java.util.UUID;
 public class PeerInfo implements Serializable {
     private UUID uniqueIdentifier;
     private boolean participent;
+    private boolean leader;
     private InetAddress ipAddr;
     private int port;
 
@@ -24,6 +25,14 @@ public class PeerInfo implements Serializable {
 
     public void setParticipent(boolean participent) {
         this.participent = participent;
+    }
+
+    public boolean isLeader() {
+        return leader;
+    }
+
+    public void setLeader(boolean leader) {
+        this.leader = leader;
     }
 
     public InetAddress getIpAddr() {
