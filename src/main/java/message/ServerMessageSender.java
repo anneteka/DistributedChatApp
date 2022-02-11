@@ -1,9 +1,6 @@
 package message;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -30,6 +27,7 @@ public class ServerMessageSender implements Runnable {
         clientAddresses = new HashMap<>();
     }
 
+    @SneakyThrows
     @Override
     public void run() {
         while (true){

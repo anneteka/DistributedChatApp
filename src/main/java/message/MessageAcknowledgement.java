@@ -14,16 +14,25 @@ import java.io.*;
 public class MessageAcknowledgement {
     private String messageId;
     private String clientId;
+    private boolean isEmpty;
 
     public MessageAcknowledgement(byte[] fromArray) {
         ByteArrayInputStream bis = new ByteArrayInputStream(fromArray);
         try (ObjectInput in = new ObjectInputStream(bis)) {
             MessageAcknowledgement m = (MessageAcknowledgement) in.readObject();
             this.messageId = m.getMessageId();
+            isEmpty = false;
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
+            isEmpty = true;
         }
         // ignore close exception
+    }
+
+    public MessageAcknowledgement(String messageId, String clientId) {
+        this.messageId = messageId;
+        this.clientId = clientId;
+        isEmpty = false;
     }
 
     public byte[] toByteArray() {

@@ -1,9 +1,6 @@
 package message;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -33,8 +30,7 @@ public class ClientMessageSender implements Runnable {
     }
 
     private void sendMessage(String s) {
-        byte[] buffer = s.getBytes();
-        sendMsg(buffer);
+        sendMessage(new Message("generated-id", s, clientId, username ));
     }
 
     private void sendMessage(Message message){
@@ -54,6 +50,7 @@ public class ClientMessageSender implements Runnable {
         sendMsg(ack.toByteArray());
     }
 
+    @SneakyThrows
     public void run() {
         boolean connected = false;
         System.out.println("sender started");
@@ -69,14 +66,17 @@ public class ClientMessageSender implements Runnable {
         while (true) {
             try {
                 while (!in.ready()) {
-                    Thread.sleep(100);
+                    Thread.sleep(500);
+                    sendMessage(queue.getFirst());
                 }
                 String msg = in.readLine();
-                sendMessage(new Message("generated-message-id", msg, clientId, username));
+                queue.add(new Message("generated-message-id", msg, clientId, username));
                 // todo acknowledgement here
             } catch (Exception e) {
                 e.printStackTrace();
             }
+            if (Thread.interrupted())
+                throw new InterruptedException();
         }
     }
 }
