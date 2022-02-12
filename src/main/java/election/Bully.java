@@ -166,7 +166,7 @@ public class Bully {
             //byte[] data = SerializationUtils.serialize(myElectionInfo);
             if(broadcast) {
                 for(int i = 0; i < address.size(); i++) {
-                    UDP.broadcast(bos.toByteArray(), address.get(i), NetworkConstant.leaderDestPort);
+                    UDP.broadcast(bos.toByteArray(), address.get(0), NetworkConstant.leaderDestPort);
                 }
             } else{
                 UDP.broadcast(bos.toByteArray(), address.get(0), NetworkConstant.leaderDestPort);

@@ -70,6 +70,11 @@ public class Node {
         leaderElection = new Bully();
         leaderElection.startElection();
         //This should be called when application is closing
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         leaderElection.stopPolling();
     }
 
