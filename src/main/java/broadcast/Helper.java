@@ -36,7 +36,12 @@ public class Helper {
 			}
 			networkInterface.getInterfaceAddresses().stream()
 				.map(a -> a.getBroadcast())
-				.filter(Objects::nonNull)
+				.filter(x -> {
+                    if (x != null && x.getHostAddress().equals("0.0.0.0")) {
+                        return true;
+                    }
+                    return false;
+                })
 				.forEach(addressList::add);
 		}
 		return addressList;
