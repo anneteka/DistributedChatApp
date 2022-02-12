@@ -2,6 +2,7 @@ package node;
 
 import broadcast.BroadcastListener;
 import broadcast.BroadcastSender;
+import election.Bully;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -19,6 +20,7 @@ public class Node {
     private Role role;
     private BroadcastListener bclistener;
     private BroadcastSender bcsender;
+    private Bully leaderElection;
     private ClientMessageReceiver receiver;
     private ClientMessageSender sender;
     private ServerNode serverNode;
@@ -61,6 +63,14 @@ public class Node {
         });
         senderThread.start();
         listenerThread.start();
+    }
+
+    public void startElection()
+    {
+        leaderElection = new Bully();
+        leaderElection.startElection();
+        //This should be called when application is closing
+        leaderElection.stopPolling();
     }
 
     public void becomeServer() throws IOException {
