@@ -21,7 +21,7 @@ public class BroadcastListener extends Thread{
 
 	static DatagramSocket socket;
 	boolean running;
-	byte[] buffer = new byte[512];
+	byte[] buffer = new byte[1024];
 	static int port = 5024;
 	List<PeerInfo> selfInfo;
 	Peers peers;
@@ -87,29 +87,52 @@ public class BroadcastListener extends Thread{
 
 					switch(localPeers.getFlag()) {
 						case BROADCAST:	//Reply to the Client with List of peers"(Only the Leader should reply)
+						{
 							PeerInfo leader = Bully.getInstance().getLeader();
 
-							if(leader.isLeader()){
-									System.out.println("Received Discovery in if " + leader.getIpAddr() + leader.getPort());
-									peers.setFlag(Peers.Flag.REPLY);
-									sendResponse(responseMessage, address, UDP.serializeToByteArray(peers));
+							if (leader.isLeader()) {
 
-									for(int i = 0; i < getPeersSize(); i++)
-									{
-										peers.setFlag(Peers.Flag.ACK);
-										sendResponse(responseMessage, peers.getPeers().get(i).getIpAddr(), UDP.serializeToByteArray(peers));
-									}
+								// Adding client address
+								PeerInfo newPeer = new PeerInfo();
+								newPeer.setIpAddr(address);
+								newPeer.setParticipent(true);
 
-									PeerInfo newPeer = new PeerInfo();
-									newPeer.setIpAddr(address);
-									newPeer.setParticipent(true);
-									peers.addPeer(newPeer);
-							}
-							else{}//This Node is not the leader
-							break;
+								peers.addPeer(newPeer);
 
-						case  REPLY:		//1-1 Add the address as Leader Peer and update local Peers(This is a Client who joined)
+								peers.setFlag(Peers.Flag.REPLY);
+
+								//This is for REPLY
+								//sendResponse(responseMessage, address, UDP.serializeToByteArray(peers));
+
+								// This is for ACK
+								for (int i = 0; i < getPeersSize(); i++) {
+									peers.setFlag(Peers.Flag.ACK);
+									sendResponse(responseMessage, peers.getPeers().get(i).getIpAddr(), UDP.serializeToByteArray(peers));
+								}
+
+							} else {
+							}//This Node is not the leader
+						}
+						break;
+
+						case  REPLY:		//1-1 Add the address as Leader Peer and update local Peers(This is a Client who joined) // this might have to be removed
 						{
+							peers.clear();
+
+							PeerInfo newLeader = new PeerInfo();
+							newLeader.setIpAddr(address);
+							newLeader.setLeader(true);
+							peers.addPeer(newLeader);
+							for (int i = 0; i < localPeers.getPeers().size(); i++)//TODO: deserialize object
+							{
+								peers.addPeer(localPeers.getPeers().get(i));
+							}
+						}
+						break;
+
+						case  ACK:			//1-1 Add the address as a new Client Peer(This is another Client)
+						{
+							peers.clear();
 							PeerInfo newLeader = new PeerInfo();
 							newLeader.setIpAddr(address);
 							newLeader.setLeader(true);
@@ -117,21 +140,16 @@ public class BroadcastListener extends Thread{
 
 							for (int i = 0; i < localPeers.getPeers().size(); i++)//TODO: deserialize object
 							{
-								peers.clear();
 								peers.addPeer(localPeers.getPeers().get(i));
 							}
-						}
-							break;
 
-						case  ACK:			//1-1 Add the address as a new Client Peer(This is another Client)
-						{
-							for (int i = 0; i < localPeers.getPeers().size(); i++)//TODO: deserialize object
-							{
-								peers.clear();
-								peers.addPeer(localPeers.getPeers().get(i));
+							System.out.println("Connected Nodes are Begin : ");
+							for(int i = 0; i <this.getPeersSize(); i++){
+								System.out.println(this.getPeers().getPeers().get(i).getIpAddr().getHostAddress());
 							}
+							System.out.println("Connected Nodes are End: ");
 						}
-							break;
+						break;
 					}
 				}
 			}

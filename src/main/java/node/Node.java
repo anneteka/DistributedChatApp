@@ -75,15 +75,11 @@ public class Node {
             }
             System.out.print(".");
         }
+        System.out.print("\n");
+
         if(bclistener.getPeersSize() == 0) {
             System.out.println("\nNo other Node was discovered");
             startElection();
-        }else{
-            System.out.println("Connected Nodes are Begin : ");
-            for(int i = 0; i <bclistener.getPeersSize(); i++){
-                System.out.println(bclistener.getPeers().getPeers().get(i).getIpAddr().getHostAddress());
-            }
-            System.out.println("Connected Nodes are End: ");
         }
     }
 
