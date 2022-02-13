@@ -94,6 +94,17 @@ public class UDP {
         return buf;
     }
 
+    public static byte[] receiveUdp(MulticastSocket socket) throws IOException {
+        byte[] buf = null;
+
+        buf = new byte[NetworkConstant.receiverBufferLength];
+
+        DatagramPacket packet = new DatagramPacket(buf, buf.length);
+        socket.receive(packet);
+
+        return buf;
+    }
+
     public static byte[] serializeToByteArray(Object obj) {
 
         ByteArrayOutputStream bos = new ByteArrayOutputStream();

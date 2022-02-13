@@ -35,8 +35,9 @@ public class ClientMode {
     }
 
         public void sendData(Object obj){
+            System.out.println("Send Data from client IP and Port " + NetworkConstant.leaderMessageReceiverPort);
             byte[] byteArray = UDP.serializeToByteArray(obj);
-            UDP.sendUdp(byteArray, senderSocket, leader.getIpAddr(), leader.getPort());
+            UDP.sendUdp(byteArray, senderSocket, leader.getIpAddr(), NetworkConstant.leaderMessageReceiverPort);
         }
 
         public MessageInfo receiveData(){

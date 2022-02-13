@@ -101,7 +101,7 @@ public class Node {
     }
 
     public void startMessaging(){
-        if(!leaderElection.amILeader()){
+        if(leaderElection.amILeader()){
             peer.setRole(PeerHelper.PeerRole.SERVER);
         }else {
             peer.setRole(PeerHelper.PeerRole.CLIENT);

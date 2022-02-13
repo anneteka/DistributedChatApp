@@ -52,6 +52,7 @@ public class ServerMode {
 
         try {
             byte[] byteArray = UDP.receiveUdp(receiverSocket);
+            System.out.println("Received Data from client" );
             info = (MessageInfo)UDP.deserializeByteArray(byteArray);
             messages.put(clock.getNewMessageId(), info);
         } catch (IOException e) {

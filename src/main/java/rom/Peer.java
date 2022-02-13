@@ -86,7 +86,6 @@ public class Peer {
                 if(role == PeerHelper.PeerRole.CLIENT) {
                     MessageInfo info = readWrite.transmit.read(clock.getNewMessageId());
                     client.sendData(info);
-                    System.out.println("Received In thread Id : " + info.getMessageId() + " "+ info.getMessage());
                 }
 
                 try {
