@@ -64,7 +64,14 @@ public class Bully {
         return instance;
     }
 
-    public UUID getClientID()
+    public boolean amILeader(){
+        if(myElectionInfo.getElectionSate() == ElectionInfo.Election.LEADER){
+            return true;
+        }
+        return false;
+    }
+
+    public UUID getClientUUID()
     {
         return myInfo.getUniqueIdentifier();
     }

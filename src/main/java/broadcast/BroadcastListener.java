@@ -26,6 +26,24 @@ public class BroadcastListener extends Thread{
 	List<PeerInfo> selfInfo;
 	Peers peers;
 
+	private static BroadcastListener instance = null;
+
+	public static BroadcastListener getInstance(){
+		if(instance == null){
+			instance = new BroadcastListener();
+		}
+		return instance;
+	}
+
+	public PeerInfo getLeader(){
+		for(int i = 0; i < this.getPeersSize(); i++){
+			if(peers.getPeers().get(i).isLeader()){
+				return peers.getPeers().get(i);
+			}
+		}
+		return null;
+	}
+
 	public Integer getPeersSize(){
 		return peers.getPeers().size();
 	}
@@ -34,7 +52,7 @@ public class BroadcastListener extends Thread{
 		return peers;
 	}
 
-	public BroadcastListener() {
+	private BroadcastListener() {
 		selfInfo = new ArrayList<>();
 		try {
 			peers = new Peers();

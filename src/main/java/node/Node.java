@@ -8,6 +8,8 @@ import lombok.Getter;
 import lombok.Setter;
 import message.ClientMessageReceiver;
 import message.ClientMessageSender;
+import rom.Peer;
+import rom.PeerHelper;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -29,10 +31,12 @@ public class Node {
     private String deviceId;
     private String username;
     private InetAddress serverAddress;
+    private Peer peer;
 
     public Node() {
         role = Role.undecided;
         this.leaderElection = Bully.getInstance();
+        this.peer = Peer.getInstacne();
     }
 
     public Node(
@@ -61,7 +65,7 @@ public class Node {
 
     public void discover(){
         bcsender = new BroadcastSender();
-        bclistener = new BroadcastListener();     
+        bclistener = BroadcastListener.getInstance();
         Thread listenerThread = new Thread(() -> {
             bclistener.run();
         });
@@ -81,18 +85,29 @@ public class Node {
             System.out.println("\nNo other Node was discovered");
             startElection();
         }
+
+        startMessaging();
     }
 
     public void startElection()
     {
-
         leaderElection.startElection();
-        //This should be called when application is closing
+
         try {
             Thread.sleep(5000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+    }
+
+    public void startMessaging(){
+        if(!leaderElection.amILeader()){
+            peer.setRole(PeerHelper.PeerRole.SERVER);
+        }else {
+            peer.setRole(PeerHelper.PeerRole.CLIENT);
+        }
+
+        peer.startMessaging();
     }
 
     public void becomeServer() throws IOException {
