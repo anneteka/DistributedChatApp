@@ -14,6 +14,6 @@ public class MainApp {
         appNode.startElection();       
         // set hostname here
         // should be set automatically sometime after connecting to the network
-        //appNode.setHostname("DESKTOP-8DHRR0H");       
+        //appNode.setHostname("DESKTOP-8DHRR0H");
     }
 }

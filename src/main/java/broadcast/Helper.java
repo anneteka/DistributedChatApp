@@ -36,7 +36,7 @@ public class Helper {
 			}
 			networkInterface.getInterfaceAddresses().stream()
 				.map(a -> a.getBroadcast())
-					.filter( Objects::nonNull)
+				.filter(Objects::nonNull)
 				.filter(x -> {
                     if (x.getHostAddress().equals("0.0.0.0")) {
                         return false;

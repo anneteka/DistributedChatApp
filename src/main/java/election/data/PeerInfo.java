@@ -53,7 +53,7 @@ public class PeerInfo implements Serializable {
 
     @Override
     public String toString() {
-        return "PeerInfo [UUID=" + uniqueIdentifier + ", ipAddr=" + ipAddr.getHostName() + "]";
+        return "PeerInfo [UUID='" + uniqueIdentifier + "', ipAddr='" + ipAddr.getHostName() + "']";
     }
 
     @Override

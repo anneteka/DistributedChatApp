@@ -14,25 +14,18 @@ public class BroadcastSender{
 	boolean running;
 	private static DatagramSocket socket;
 	private static int port = 5024;
-	int attemps = 10;
 	
-	public void broadcast() {
-		running = true;		
+	public void broadcast() {	
 		try {
-			while(running){
-				socket = new DatagramSocket();
-				socket.setBroadcast(true);
-				List<InetAddress> bcastaddressList = Helper.getBroadcastAddressList();
-				List<InetAddress> ipaddressList = Helper.getIPAddressList();
-				for(int i = 0;i<bcastaddressList.size(); i++)
-				{
-					String broadcastMessage = ipaddressList.get(i).getHostAddress();
-					byte[] bcast_msg = broadcastMessage.getBytes();
-					broadcastPacket(broadcastMessage, bcastaddressList.get(i), bcast_msg);
-				}
-				attemps--;
-				if(attemps==0)
-					break;
+			socket = new DatagramSocket();
+			socket.setBroadcast(true);
+			List<InetAddress> bcastaddressList = Helper.getBroadcastAddressList();
+			List<InetAddress> ipaddressList = Helper.getIPAddressList();
+			for(int i = 0;i<bcastaddressList.size(); i++)
+			{
+				String broadcastMessage = "broadcast;" + ipaddressList.get(i).getHostAddress();
+				byte[] bcast_msg = broadcastMessage.getBytes();
+				broadcastPacket(broadcastMessage, bcastaddressList.get(i), bcast_msg);
 			}
 		}
         catch (SocketException ex) {

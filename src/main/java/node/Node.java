@@ -52,17 +52,31 @@ public class Node {
 
     }
 
-    public void broadcast() {
+    public void broadcast(){
         bcsender = new BroadcastSender();
-        bclistener = new BroadcastListener();
-        Thread senderThread = new Thread(() -> {
-            bcsender.broadcast();
-        });      
+        bclistener = new BroadcastListener();     
         Thread listenerThread = new Thread(() -> {
             bclistener.run();
         });
-        senderThread.start();
         listenerThread.start();
+        bcsender.broadcast();
+        for(int i = 0; i < 5; i++) {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            System.out.print(".");
+        }
+        if(bclistener.getPeers().size() == 0) {
+            System.out.println("\nNo other Node was discovered");
+            try {
+                becomeServer();
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
     }
 
     public void startElection()
