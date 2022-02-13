@@ -1,5 +1,7 @@
 package broadcast;
 
+import election.network.UDP;
+
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -23,9 +25,9 @@ public class BroadcastSender{
 			List<InetAddress> ipaddressList = Helper.getIPAddressList();
 			for(int i = 0;i<bcastaddressList.size(); i++)
 			{
-				String broadcastMessage = "broadcast;" + ipaddressList.get(i).getHostAddress();
-				byte[] bcast_msg = broadcastMessage.getBytes();
-				broadcastPacket(broadcastMessage, bcastaddressList.get(i), bcast_msg);
+				Peers localPeer = new Peers();
+				localPeer.setFlag(Peers.Flag.BROADCAST);
+				broadcastPacket( ipaddressList.get(i).getHostAddress(),bcastaddressList.get(i), UDP.serializeToByteArray(localPeer));
 			}
 		}
         catch (SocketException ex) {

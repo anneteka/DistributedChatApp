@@ -32,6 +32,7 @@ public class Node {
 
     public Node() {
         role = Role.undecided;
+        this.leaderElection = Bully.getInstance();
     }
 
     public Node(
@@ -46,13 +47,19 @@ public class Node {
         this.hostname = hostname;
         this.deviceId = deviceId;
         this.serverAddress = address;
+
+        this.leaderElection = Bully.getInstance();
+    }
+
+    public void terminate(){
+        leaderElection.stopPolling();
     }
 
     public void pingNode() {
 
     }
 
-    public void broadcast(){
+    public void discover(){
         bcsender = new BroadcastSender();
         bclistener = new BroadcastListener();     
         Thread listenerThread = new Thread(() -> {
@@ -68,20 +75,21 @@ public class Node {
             }
             System.out.print(".");
         }
-        if(bclistener.getPeers().size() == 0) {
+        if(bclistener.getPeersSize() == 0) {
             System.out.println("\nNo other Node was discovered");
-            try {
-                becomeServer();
-            } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+            startElection();
+        }else{
+            System.out.println("Connected Nodes are Begin : ");
+            for(int i = 0; i <bclistener.getPeersSize(); i++){
+                System.out.println(bclistener.getPeers().getPeers().get(i).getIpAddr().getHostAddress());
             }
+            System.out.println("Connected Nodes are End: ");
         }
     }
 
     public void startElection()
     {
-        leaderElection = new Bully();
+
         leaderElection.startElection();
         //This should be called when application is closing
         try {
@@ -89,7 +97,6 @@ public class Node {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        leaderElection.stopPolling();
     }
 
     public void becomeServer() throws IOException {

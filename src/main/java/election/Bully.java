@@ -33,7 +33,8 @@ public class Bully {
     private boolean poll = true;
     private boolean bullied = true;
 
-    public Bully() {
+    private static Bully instance = null;
+    private Bully() {
         try {
 
             receiverSocket = new DatagramSocket(NetworkConstant.leaderDestPort);
@@ -56,12 +57,19 @@ public class Bully {
         }
     }
 
-    public static UUID getClientID()
+    public static Bully getInstance(){
+        if(instance == null){
+            instance = new Bully();
+        }
+        return instance;
+    }
+
+    public UUID getClientID()
     {
         return myInfo.getUniqueIdentifier();
     }
 
-    public static PeerInfo getLeader()
+    public PeerInfo getLeader()
     {
         return leader;
     }
@@ -81,6 +89,7 @@ public class Bully {
             if(!bullied) {
                 myElectionInfo.setElectionSate(ElectionInfo.Election.LEADER);
                 serializeAndSendUDP(myElectionInfo, Helper.getBroadcastAddressList(), true);
+                leader = myElectionInfo.getPeerInfo();
                 System.out.println(BULLY_ALGO + "Not Bullied, Announce as leader with IP : " + myElectionInfo.getPeerInfo().getIpAddr());
             }
 
