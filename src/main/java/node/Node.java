@@ -104,7 +104,7 @@ public class Node {
 
     public void startMessaging(){
         if(leaderElection.amILeader()){
-            FaultToleranceServer.getInstacne().syncRecive.start();
+            //FaultToleranceServer.getInstacne().syncRecive.start();
             FaultToleranceServer.getInstacne().syncSend.start();
             peer.setRoleAndLeader(PeerHelper.PeerRole.SERVER, bclistener.getLeader());
         }else {

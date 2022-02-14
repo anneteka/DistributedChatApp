@@ -38,6 +38,7 @@ public class FaultToleranceServer {
                     Fault f = (Fault) UDP.deserializeByteArray(data);
                     //list
                     //compare with peers
+
                     if(f.getFlag() != Fault.Flag.SYNC_ALIVE_CLIENT){
                         throw new IOException("Sync Server ACK Failure");
                     }
