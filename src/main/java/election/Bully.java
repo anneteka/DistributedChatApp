@@ -94,6 +94,7 @@ public class Bully {
             myElectionInfo.getPeerInfo().setParticipent(false);
             myElectionInfo.getPeerInfo().setLeader(true);
             peers.clear();
+            BroadcastListener.getInstance().getPeers().clear();
 
             myElectionInfo.setElectionSate(ElectionInfo.Election.REGISTRATION_START);
             serializeAndSendUDP(myElectionInfo, Helper.getBroadcastAddressList(), true);
@@ -167,7 +168,7 @@ public class Bully {
 
     private boolean bullyAndStartElection(ElectionInfo info)
     {
-        if(shouldIbully(info))
+        if(myElectionInfo.getPeerInfo().getUniqueIdentifier().compareTo(info.getPeerInfo().getUniqueIdentifier()) > 0)
         {
             myElectionInfo.getPeerInfo().setParticipent(false);
             myElectionInfo.getPeerInfo().setLeader(true);
@@ -188,7 +189,8 @@ public class Bully {
         boolean electionStartedByMe = myElectionInfo.getElectionSate() == ElectionInfo.Election.REGISTRATION_START;
         boolean bully = myElectionInfo.getPeerInfo().getUniqueIdentifier().compareTo(info.getPeerInfo().getUniqueIdentifier()) > 0;
 
-        return ((infoIsDiffernt && electionStartedByMe) || bully);
+        //return ((infoIsDiffernt && electionStartedByMe) || bully);
+        return (bully);
     }
 
     private void serializeAndSendUDP(Object obj, List<InetAddress> address, boolean broadcast)

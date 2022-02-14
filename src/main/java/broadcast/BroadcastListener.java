@@ -122,7 +122,7 @@ public class BroadcastListener extends Thread{
 						{
 							PeerInfo leader = this.getLeader();
 
-							if (leader.isLeader()) {
+							if (leader != null && leader.isLeader()) {
 
 								// Adding client address
 								PeerInfo newPeer = new PeerInfo();

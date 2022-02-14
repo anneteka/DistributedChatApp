@@ -111,7 +111,7 @@ public class Node {
             peer.setRoleAndLeader(PeerHelper.PeerRole.SERVER, bclistener.getLeader());
         }else {
             FaultToleranceClient.getInstacne().syncRecive.start();
-            FaultToleranceClient.getInstacne().syncSend.start();
+            //FaultToleranceClient.getInstacne().syncSend.start();
             peer.setRoleAndLeader(PeerHelper.PeerRole.CLIENT, bclistener.getLeader());
         }
 
