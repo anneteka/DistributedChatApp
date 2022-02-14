@@ -37,6 +37,7 @@ public class ClientMessageReceiver implements Runnable {
                 }
                 if (!con.isEmpty()){
                     sender.setConnected(true);
+                    System.out.println("connection to the server established");
                 }
             } catch (Exception e) {
                 e.printStackTrace();

@@ -40,6 +40,7 @@ public class ServerMessageReceiver implements Runnable {
                     if (!received.contains(msg)) {
                         sender.addMessage(msg);
                         System.out.println(msg);
+                        received.add(msg);
                     }
                     sender.sendAcknowledgement(msg);
                 }
