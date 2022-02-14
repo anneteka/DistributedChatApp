@@ -11,6 +11,7 @@ public class ClientMessageReceiver implements Runnable {
     ClientMessageSender sender;
     String clientId;
     HashSet<Message> received;
+    private boolean isClient = true;
 
     public ClientMessageReceiver(DatagramSocket s, ClientMessageSender sender, String clientId) {
         socket = s;
@@ -18,10 +19,11 @@ public class ClientMessageReceiver implements Runnable {
         this.sender = sender;
         this.clientId = clientId;
         received = new HashSet<>();
+        isClient = true;
     }
 
     public void run() {
-        while (true) {
+        while (isClient) {
             try {
                 DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
                 socket.receive(packet);
@@ -40,6 +42,7 @@ public class ClientMessageReceiver implements Runnable {
                 }
                 if (!con.isEmpty()) {
                     sender.setConnected(true);
+                    sender.setServerAddress(packet.getAddress());
                     System.out.println("connection to the server established");
                 }
             } catch (Exception e) {

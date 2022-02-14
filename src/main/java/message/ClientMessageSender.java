@@ -1,5 +1,6 @@
 package message;
 
+import broadcast.BroadcastListener;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -24,6 +25,7 @@ public class ClientMessageSender implements Runnable {
     private LinkedList<Message> queue = new LinkedList<>();
     private InetAddress serverAddress;
     private boolean isConnected;
+    private boolean isCLient = true;
 
     public ClientMessageSender(DatagramSocket s, String h, String clientId, String username, InetAddress server) {
         socket = s;
@@ -32,6 +34,7 @@ public class ClientMessageSender implements Runnable {
         this.username = username;
         serverAddress = server;
         isConnected = false;
+        isCLient = true;
     }
 
     private void sendMessage(String s) {
@@ -60,7 +63,7 @@ public class ClientMessageSender implements Runnable {
         isConnected = false;
         System.out.println("sender started");
         BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
-        while (true) {
+        while (isCLient) {
             try {
                 while (!in.ready()) {
                     Thread.sleep(200);

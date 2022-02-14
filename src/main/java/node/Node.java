@@ -56,6 +56,9 @@ public class Node {
         this.serverAddress = address;
 
         this.leaderElection = Bully.getInstance();
+        this.bcsender = new BroadcastSender();
+        this.bclistener = BroadcastListener.getInstance();
+        this.peer = Peer.getInstacne();
     }
 
     public void terminate(){
@@ -113,26 +116,34 @@ public class Node {
 
     public void becomeServer() throws IOException {
         role = Role.server;
+        if (clientNode != null){
+            clientNode.stop();
+        }
         serverNode = new ServerNode();
+        System.out.println("became a server");
     }
 
     public void becomeClient() throws SocketException {
         role = Role.client;
-//        if (serverNode != null) {
-            // stop server thread so there is only one server always?
-//        }
+        //server address should be reassigned if server changed
+        serverAddress = bclistener.getLeader().getIpAddr();
         if (clientNode == null) {
             clientNode = new ClientNode();
+            clientNode.start(hostname, deviceId, username, serverAddress);
+        } else {
+            clientNode.setSetverAddress(serverAddress);
+            System.out.println("assigned new server");
         }
         // whatever will do smth better later
-        hostname = "100.117.151.186";
-        try {
-            serverAddress = InetAddress.getByName(hostname);
-            System.out.println(serverAddress);
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
-        }
-        clientNode.start(hostname, deviceId, username, serverAddress);
+//        hostname = "100.117.151.186";
+//        try {
+//            serverAddress = InetAddress.getByName(hostname);
+//            System.out.println(serverAddress);
+//        } catch (UnknownHostException e) {
+//            e.printStackTrace();
+//        }
+
+
     }
 
     public void initiateVoting() {

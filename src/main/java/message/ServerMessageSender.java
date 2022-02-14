@@ -1,9 +1,13 @@
 package message;
 
+import broadcast.BroadcastListener;
+import broadcast.Peers;
+import election.data.PeerInfo;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import rom.Peer;
 
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -24,16 +28,22 @@ public class ServerMessageSender implements Runnable {
     private HashMap<String, InetAddress> clientAddresses;
     private final Integer CLIENT_PORT = 8080;
     private String serverId = "server-id";
+    private BroadcastListener bcListener;
 
 
     public ServerMessageSender(DatagramSocket socket) {
         this.socket = socket;
         msgQueue = new HashMap<>();
         clientAddresses = new HashMap<>();
+        bcListener = BroadcastListener.getInstance();
     }
 
     @Override
     public void run() {
+        Peers nodes = bcListener.getPeers();
+        for (PeerInfo peer:nodes.getPeers()) {
+            addClient(peer.getUniqueIdentifier().toString(), peer.getIpAddr());
+        }
         while (true){
             try {
                 Thread.sleep(200);
@@ -80,6 +90,7 @@ public class ServerMessageSender implements Runnable {
         if (!clientAddresses.containsKey(nodeId)) {
             clientAddresses.put(nodeId, address);
             msgQueue.put(nodeId, new LinkedList<>());
+            System.out.println("New user joined the chat");
         }
     }
 
