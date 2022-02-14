@@ -14,9 +14,9 @@ public class ReadWrite {
 
     public class Receive {
 
-        public void print(MessageInfo message)
+        public void print(String message)
         {
-            System.out.println(message.getMessage());
+            System.out.println(message);
         }
     }
 
@@ -32,7 +32,6 @@ public class ReadWrite {
         {
             Integer id = messageId;
             String msg = scan.nextLine();
-            System.out.println("Read from console : " + id + " "+ msg);
             return new MessageInfo(id, msg);
         }
     }

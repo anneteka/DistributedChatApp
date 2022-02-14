@@ -121,6 +121,7 @@ public class BroadcastListener extends Thread{
 								for (int i = 0; i < getPeersSize(); i++) {									
 									sendResponse(responseMessage, peers.getPeers().get(i).getIpAddr(), UDP.serializeToByteArray(peers));
 								}
+								/*
 								FaultListener faultListener = FaultListener.getInstance();
 								Thread faultListenerlistenThread = new Thread(() -> {
 									faultListener.listen();
@@ -129,7 +130,7 @@ public class BroadcastListener extends Thread{
 									faultListener.run(address);
 								});								
 								faultListenerrunThread.start();
-								faultListenerlistenThread.start();
+								faultListenerlistenThread.start();*/
 
 							} else {
 							}//This Node is not the leader
@@ -147,11 +148,12 @@ public class BroadcastListener extends Thread{
 							{
 								peers.addPeer(localPeers.getPeers().get(i));
 							}
+							/*
 							//After receiving information from Learder, listen for ALIVE messages
 							Thread faultListenerThread = new Thread(() -> {
 								faultListener.listen();
 							});
-							faultListenerThread.start();
+							faultListenerThread.start();*/
 							System.out.println("Connected Nodes are Begin : ");
 							for(int i = 0; i <this.getPeersSize(); i++){
 								System.out.println(this.getPeers().getPeers().get(i).getIpAddr().getHostAddress());

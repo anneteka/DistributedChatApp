@@ -32,9 +32,9 @@ public class FaultListener extends Thread{
 
     private FaultListener() {
         try {
-            socket = new DatagramSocket();
-            port = socket.getPort();       
+            socket = new DatagramSocket(0);
             socket.setSoTimeout(2000);
+            port = socket.getLocalPort();
         } catch (SocketException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -44,6 +44,8 @@ public class FaultListener extends Thread{
     public void run(InetAddress address) {		
         running = true;
         try {
+            port = socket.getPort();
+            System.out.println("Port : " + port);
             while (running) {                    
                 sendPacket(Flag.ALIVE.toString(), address, UDP.serializeToByteArray(Flag.ALIVE));
                 Thread.sleep(1000);

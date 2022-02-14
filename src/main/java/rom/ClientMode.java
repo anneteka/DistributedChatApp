@@ -14,28 +14,21 @@ public class ClientMode {
 
     private PeerInfo leader = null;
 
-    public ClientMode(){
-        //leader = Bully.getLeader();
-        PeerInfo info = new PeerInfo();
+    public ClientMode(PeerInfo leader){
         try {
-            info.setIpAddr(InetAddress.getLocalHost());
-            info.setPort(NetworkConstant.clientMessageReceiverPort);
-
             senderSocket = new DatagramSocket(NetworkConstant.clientMessageSenderPort);
             receiverSocket =  new MulticastSocket(NetworkConstant.clientMessageReceiverPort);
 
             InetAddress group = InetAddress.getByName(NetworkConstant.multicastAddress);
             receiverSocket.joinGroup(group);
 
+            this.leader = leader;
         } catch (IOException e) {
             e.printStackTrace();
         }
-        leader = info;
-
     }
 
         public void sendData(Object obj){
-            System.out.println("Send Data from client IP and Port " + NetworkConstant.leaderMessageReceiverPort);
             byte[] byteArray = UDP.serializeToByteArray(obj);
             UDP.sendUdp(byteArray, senderSocket, leader.getIpAddr(), NetworkConstant.leaderMessageReceiverPort);
         }
@@ -52,4 +45,8 @@ public class ClientMode {
 
             return info;
         }
+
+    public String format(MessageInfo info){
+        return info.getPeerID() + "\t" + info.getGlobalId() + "\t" + info.getMessageId() + "\t" + info.getMessage();
+    }
 }

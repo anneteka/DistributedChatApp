@@ -15,4 +15,8 @@ public class NetworkConstant {
     public static final Integer receiverBufferLength = 1024;
 
     public static final String multicastAddress = "230.0.0.0";
+
+    public static final Integer leaderMessageRecevierSyncPort = 7733;
+    public static final Integer clientMessageRecevierSyncPort = 7744;
+    public static final String multicastAddressSync = "230.0.0.1";
 }
