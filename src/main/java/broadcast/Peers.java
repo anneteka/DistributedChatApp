@@ -1,6 +1,5 @@
 package broadcast;
 
-import com.sun.nio.sctp.PeerAddressChangeNotification;
 import election.data.PeerInfo;
 
 import java.io.Serializable;
@@ -9,7 +8,7 @@ import java.util.List;
 
 public class Peers implements Serializable {
     public enum Flag {
-        REPLY, ACK, BROADCAST, EMPTY
+        ACK, BROADCAST, EMPTY
     }
 
     private List<PeerInfo> peers;
