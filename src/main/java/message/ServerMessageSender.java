@@ -38,7 +38,9 @@ public class ServerMessageSender implements Runnable {
             try {
                 Thread.sleep(200);
                 for (Map.Entry<String, LinkedList<Message>> msgs: msgQueue.entrySet()) {
-                    sendMessage(msgs.getKey(), msgs.getValue().getFirst());
+                    if (!msgs.getValue().isEmpty()) {
+                        sendMessage(msgs.getKey(), msgs.getValue().getFirst());
+                    }
                 }
             } catch (InterruptedException e) {
                 e.printStackTrace();
