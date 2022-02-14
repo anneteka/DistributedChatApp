@@ -12,6 +12,7 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.util.LinkedList;
+import java.util.Random;
 
 @Getter
 @Setter
@@ -74,7 +75,7 @@ public class ClientMessageSender implements Runnable {
                     }
                 }
                 String msg = in.readLine();
-                queue.add(new Message("generated-message-id", msg, clientId, username));
+                queue.add(new Message("generated-message-id-"+ new Random().nextInt(), msg, clientId, username));
                 // todo acknowledgement here
             } catch (Exception e) {
                 e.printStackTrace();
