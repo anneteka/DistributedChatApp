@@ -23,6 +23,7 @@ public class ClientMessageSender implements Runnable {
     private final String username;
     private LinkedList<Message> queue = new LinkedList<>();
     private InetAddress serverAddress;
+    private boolean isConnected;
 
     public ClientMessageSender(DatagramSocket s, String h, String clientId, String username, InetAddress server) {
         socket = s;
@@ -30,6 +31,7 @@ public class ClientMessageSender implements Runnable {
         this.clientId = clientId;
         this.username = username;
         serverAddress = server;
+        isConnected = false;
     }
 
     private void sendMessage(String s) {
@@ -55,23 +57,18 @@ public class ClientMessageSender implements Runnable {
     }
 
     public void run() {
-        boolean connected = false;
+        isConnected = false;
         System.out.println("sender started");
-        do {
-            try {
-                sendMessage(username+" joined chat");
-                connected = true;
-            } catch (Exception e) {
-
-            }
-        } while (!connected);
         BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
         while (true) {
             try {
                 while (!in.ready()) {
                     Thread.sleep(200);
-                    if (!queue.isEmpty())
+                    if (!isConnected) {
+                        sendMessage(new ConnectionMessage(clientId));
+                    } else if (!queue.isEmpty()) {
                         sendMessage(queue.getFirst());
+                    }
                 }
                 String msg = in.readLine();
                 queue.add(new Message("generated-message-id", msg, clientId, username));
@@ -80,5 +77,9 @@ public class ClientMessageSender implements Runnable {
                 e.printStackTrace();
             }
         }
+    }
+
+    private void sendMessage(ConnectionMessage connectionMessage) {
+        sendMsg(connectionMessage.toByteArray());
     }
 }

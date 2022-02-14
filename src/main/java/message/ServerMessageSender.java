@@ -78,4 +78,8 @@ public class ServerMessageSender implements Runnable {
         clientAddresses.put(nodeId, address);
         msgQueue.put(nodeId, new LinkedList<>());
     }
+
+    public void sendAcknowledgement(ConnectionMessage con) {
+        sendMsg(con.toByteArray(), clientAddresses.get(con.getNodeId()), CLIENT_PORT);
+    }
 }

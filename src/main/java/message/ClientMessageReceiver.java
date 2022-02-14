@@ -26,6 +26,7 @@ public class ClientMessageReceiver implements Runnable {
                 socket.receive(packet);
                 Message rec = new Message(packet.getData());
                 MessageAcknowledgement ack = new MessageAcknowledgement(packet.getData());
+                ConnectionMessage con = new ConnectionMessage(packet.getData());
                 if (!rec.isEmpty() && received.contains(rec)) {
                     System.out.println(rec);
                     received.add(rec);
@@ -33,6 +34,9 @@ public class ClientMessageReceiver implements Runnable {
                 }
                 if (!ack.isEmpty()){
                     sender.getQueue().removeIf(message -> Objects.equals(message.getId(), ack.getMessageId()));
+                }
+                if (!con.isEmpty()){
+                    sender.setConnected(true);
                 }
             } catch (Exception e) {
                 e.printStackTrace();

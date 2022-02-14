@@ -35,6 +35,7 @@ public class ServerMessageReceiver implements Runnable {
                 socket.receive(packet);
                 Message msg = new Message(packet.getData());
                 MessageAcknowledgement ack = new MessageAcknowledgement(packet.getData());
+                ConnectionMessage con = new ConnectionMessage(packet.getData());
                 if (!msg.isEmpty()) {
                     if (!received.contains(msg)) {
                         sender.addMessage(msg);
@@ -44,6 +45,10 @@ public class ServerMessageReceiver implements Runnable {
                 }
                 if (!ack.isEmpty()){
                     sender.removeMessage(ack.getClientId(), ack.getMessageId());
+                }
+                if (!con.isEmpty()){
+                    sender.addClient(ack.getClientId(), packet.getAddress());
+                    sender.sendAcknowledgement(con);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
