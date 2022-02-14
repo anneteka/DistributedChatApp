@@ -27,6 +27,7 @@ public class Message implements Serializable{
         ByteArrayInputStream bis = new ByteArrayInputStream(fromArray);
         try (ObjectInput in = new ObjectInputStream(bis)) {
             Message m = (Message) in.readObject();
+            this.id = m.getId();
             this.msg = m.getMsg();
             this.senderId = m.getSenderId();
             this.senderUsername = m.getSenderUsername();

@@ -17,6 +17,7 @@ public class ClientMessageReceiver implements Runnable {
         buffer = new byte[1024];
         this.sender = sender;
         this.clientId = clientId;
+        received = new HashSet<>();
     }
 
     public void run() {
@@ -27,15 +28,17 @@ public class ClientMessageReceiver implements Runnable {
                 Message rec = new Message(packet.getData());
                 MessageAcknowledgement ack = new MessageAcknowledgement(packet.getData());
                 ConnectionMessage con = new ConnectionMessage(packet.getData());
-                if (!rec.isEmpty() && received.contains(rec)) {
-                    System.out.println(rec);
-                    received.add(rec);
+                if (!rec.isEmpty()) {
+                    if (!received.contains(rec)) {
+                        received.add(rec);
+                        System.out.println(rec);
+                    }
                     sender.sendAcknowledgement(new MessageAcknowledgement(rec.getId(), clientId));
                 }
-                if (!ack.isEmpty()){
+                if (!ack.isEmpty()) {
                     sender.getQueue().removeIf(message -> Objects.equals(message.getId(), ack.getMessageId()));
                 }
-                if (!con.isEmpty()){
+                if (!con.isEmpty()) {
                     sender.setConnected(true);
                     System.out.println("connection to the server established");
                 }
