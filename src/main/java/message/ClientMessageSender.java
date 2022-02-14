@@ -17,7 +17,7 @@ import java.util.LinkedList;
 @Setter
 @AllArgsConstructor
 public class ClientMessageSender implements Runnable {
-    public final static int PORT = 8080;
+    public final static int PORT = 8081;
     private final DatagramSocket socket;
     private String hostname;
     private final String clientId;
