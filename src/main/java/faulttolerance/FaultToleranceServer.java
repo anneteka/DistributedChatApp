@@ -1,17 +1,21 @@
 package faulttolerance;
 
 import broadcast.BroadcastListener;
+import broadcast.Peers;
 import election.Bully;
+import election.data.PeerInfo;
 import election.network.NetworkConstant;
 import election.network.UDP;
 
 import java.io.IOException;
 import java.net.*;
+import java.util.List;
 
 public class FaultToleranceServer {
     private static DatagramSocket sender = null;
     private static DatagramSocket receiver = null;
     private static FaultToleranceServer instacne = null;
+    private static Peers receivedPeers;
 
     public static FaultToleranceServer getInstacne(){
         if(instacne == null){
@@ -29,22 +33,60 @@ public class FaultToleranceServer {
         }
     }
 
-    public static Thread syncRecive = new Thread() {
+    private static Thread syncCompare = new Thread(){
         public void run() {
             try {
                 while(true) {
-                    receiver.setSoTimeout(2000);
-                    byte[] data = UDP.receiveUdp(receiver);
-                    Fault f = (Fault) UDP.deserializeByteArray(data);
-                    //list
-                    //compare with peers
+                    Thread.sleep(1500);
+                    BroadcastListener bcListener = BroadcastListener.getInstance();
+                    Peers registeredPeers = bcListener.getPeers();
+                    for (int i= 0; i < registeredPeers.getPeers().size(); i++)
+                    {
+                        if(!registeredPeers.getPeers().contains(receivedPeers.getPeers().get(i))) {//TODO check contains comparisson
+                            System.out.println("Peer "+ receivedPeers.getPeers().get(i).getIpAddr().getHostAddress() + " sync wasn't received");
+                            bcListener.removeClientFromPeers(receivedPeers.getPeers().get(i));
+                            bcListener.sendACKForClients();
+                        }
+                        // if(registeredPeers.getPeers().get(i).getIpAddr() == receivedPeers.getPeers().get)
+                        //     continue;
+                        // else
+                        //     ;
+                    }
+                    receivedPeers.clear();
+                }
+            }
+            catch (InterruptedException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }       
+        }
+    };
 
+    public static Thread syncRecive = new Thread() {
+        public void run() {
+            try {
+                boolean firstTime = true;
+                while(true) {
+                    byte[] buffer = null;
+                    buffer = new byte[NetworkConstant.receiverBufferLength];
+                    DatagramPacket packet = new DatagramPacket(buffer, buffer.length);                                       
+                    receiver.receive(packet);
+                    if(firstTime) {
+                        firstTime = false;
+                        syncCompare.start();
+                    }
+                    byte[] data = packet.getData();
+                    InetAddress address = packet.getAddress();                    
+                    Fault f = (Fault) UDP.deserializeByteArray(data);
+                    PeerInfo newPeer = new PeerInfo();
+					newPeer.setIpAddr(address);
+					newPeer.setParticipent(true);
+                    receivedPeers.addPeer(newPeer);
+                    
                     if(f.getFlag() != Fault.Flag.SYNC_ALIVE_CLIENT){
                         throw new IOException("Sync Server ACK Failure");
                     }
                 }
-            } catch (SocketTimeoutException e) {
-                System.out.println("Timeout : Unable to sync with client.");
             } catch (SocketException e) {
                 e.printStackTrace();
             } catch (IOException e) {
