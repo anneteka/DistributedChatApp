@@ -69,7 +69,7 @@ public class Node {
 
     }
 
-    public void discover(){            
+    public void discover() throws IOException {
         Thread listenerThread = new Thread(() -> {
             bclistener.run();
         });
@@ -104,14 +104,16 @@ public class Node {
         }
     }
 
-    public void startMessaging(){
+    public void startMessaging() throws IOException {
         if(leaderElection.amILeader()){
             peer.setRole(PeerHelper.PeerRole.SERVER);
+            becomeServer();
         }else {
             peer.setRole(PeerHelper.PeerRole.CLIENT);
+            becomeClient();
         }
 
-        peer.startMessaging();
+//        peer.startMessaging();
     }
 
     public void becomeServer() throws IOException {
