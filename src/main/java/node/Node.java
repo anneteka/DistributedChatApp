@@ -29,8 +29,8 @@ public class Node {
     private ServerNode serverNode;
     private ClientNode clientNode;
     private String hostname;
-    private String deviceId;
-    private String username;
+    private String deviceId = "client=device-id-generated";
+    private String username = "client-user";
     private InetAddress serverAddress;
     private Peer peer;
 

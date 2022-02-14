@@ -47,7 +47,7 @@ public class ServerMessageReceiver implements Runnable {
                     sender.removeMessage(ack.getClientId(), ack.getMessageId());
                 }
                 if (!con.isEmpty()){
-                    sender.addClient(ack.getClientId(), packet.getAddress());
+                    sender.addClient(con.getNodeId(), packet.getAddress());
                     sender.sendAcknowledgement(con);
                 }
             } catch (Exception e) {
