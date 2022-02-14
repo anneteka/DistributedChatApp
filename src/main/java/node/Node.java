@@ -110,12 +110,12 @@ public class Node {
         this.deviceId = Bully.getInstance().getClientUUID().toString();
         if(leaderElection.amILeader()){
             //FaultToleranceServer.getInstacne().syncRecive.start();
-            FaultToleranceServer.getInstacne().syncSend.start();
+//            FaultToleranceServer.getInstacne().syncSend.start();
             peer.setRoleAndLeader(PeerHelper.PeerRole.SERVER, bclistener.getLeader());
             becomeServer();
         }else {
-            FaultToleranceClient.getInstacne().syncRecive.start();
-            FaultToleranceClient.getInstacne().syncSend.start();
+//            FaultToleranceClient.getInstacne().syncRecive.start();
+//            FaultToleranceClient.getInstacne().syncSend.start();
             peer.setRoleAndLeader(PeerHelper.PeerRole.CLIENT, bclistener.getLeader());
             becomeClient();
         }
