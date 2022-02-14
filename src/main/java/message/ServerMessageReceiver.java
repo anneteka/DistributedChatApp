@@ -16,6 +16,7 @@ import java.util.*;
 public class ServerMessageReceiver implements Runnable {
     DatagramSocket socket;
     ServerMessageSender sender;
+    HashSet<Message> received = new LinkedHashSet<>();
     HashMap<String, LinkedList<Message>> msgQueue;
     private byte[] buffer = new byte[1024];
 
@@ -35,7 +36,11 @@ public class ServerMessageReceiver implements Runnable {
                 Message msg = new Message(packet.getData());
                 MessageAcknowledgement ack = new MessageAcknowledgement(packet.getData());
                 if (!msg.isEmpty()) {
-                    sender.addMessage(msg);
+                    if (!received.contains(msg)) {
+                        sender.addMessage(msg);
+                        System.out.println(msg);
+                    }
+                    sender.sendAcknowledgement(msg);
                 }
                 if (!ack.isEmpty()){
                     sender.removeMessage(ack.getClientId(), ack.getMessageId());

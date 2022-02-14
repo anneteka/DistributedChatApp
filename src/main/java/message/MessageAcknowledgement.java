@@ -28,9 +28,8 @@ public class MessageAcknowledgement implements Serializable{
             this.messageId = m.getMessageId();
             this.clientId = m.getClientId();
             isEmpty = false;
-        } catch (IOException | ClassNotFoundException e) {
+        } catch (IOException | ClassNotFoundException | ClassCastException e) {
             isEmpty = true;
-            e.printStackTrace();
         }
         // ignore close exception
     }

@@ -19,9 +19,11 @@ import java.util.Objects;
 @Setter
 public class ServerMessageSender implements Runnable {
     private DatagramSocket socket;
+    // node id / node queue
     private HashMap<String, LinkedList<Message>> msgQueue;
     private HashMap<String, InetAddress> clientAddresses;
     private final Integer CLIENT_PORT = 8080;
+    private String serverId = "server-id";
 
 
     public ServerMessageSender(DatagramSocket socket) {
@@ -42,6 +44,9 @@ public class ServerMessageSender implements Runnable {
                 e.printStackTrace();
             }
         }
+    }
+    public void sendAcknowledgement(Message message) {
+        sendMsg(new MessageAcknowledgement(message.getId(), serverId).toByteArray(), clientAddresses.get(message.getSenderId()), CLIENT_PORT);
     }
 
     private void sendMessage(String clientId, Message message) {
@@ -67,5 +72,10 @@ public class ServerMessageSender implements Runnable {
     }
     public void removeMessage(String clientId, String messageId){
         msgQueue.get(clientId).removeIf(message -> Objects.equals(message.getId(), messageId));
+    }
+
+    public void addClient(String nodeId, InetAddress address){
+        clientAddresses.put(nodeId, address);
+        msgQueue.put(nodeId, new LinkedList<>());
     }
 }

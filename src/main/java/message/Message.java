@@ -31,9 +31,8 @@ public class Message implements Serializable{
             this.senderId = m.getSenderId();
             this.senderUsername = m.getSenderUsername();
             isEmpty = false;
-        } catch (IOException | ClassNotFoundException e) {
+        } catch (IOException | ClassNotFoundException | ClassCastException e) {
             isEmpty = true;
-            e.printStackTrace();
         }
         // ignore close exception
     }

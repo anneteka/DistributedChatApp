@@ -125,9 +125,10 @@ public class Node {
             clientNode = new ClientNode();
         }
         // whatever will do smth better later
-        hostname = "DESKTOP-8DHRR0H";
+        hostname = "100.117.151.186";
         try {
             serverAddress = InetAddress.getByName(hostname);
+            System.out.println(serverAddress);
         } catch (UnknownHostException e) {
             e.printStackTrace();
         }
