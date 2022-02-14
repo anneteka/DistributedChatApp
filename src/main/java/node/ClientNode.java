@@ -14,7 +14,7 @@ public class ClientNode{
     Thread rt;
     Thread st;
     public void start(String hostname, String id, String username, InetAddress server) throws SocketException {
-        DatagramSocket socket = new DatagramSocket(8080);
+        DatagramSocket socket = new DatagramSocket(8081);
         s = new ClientMessageSender(socket, hostname, id, username, server);
         r = new ClientMessageReceiver(socket, s, id);
         rt = new Thread(r);

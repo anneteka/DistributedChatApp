@@ -16,7 +16,7 @@ import java.util.LinkedList;
 
 @Getter
 public class ServerNode {
-    public final static int PORT = 8080;
+    public final static int PORT = 8081;
     private final static int BUFFER = 1024;
 
     private final DatagramSocket socket;
