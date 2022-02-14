@@ -38,7 +38,7 @@ public class Helper {
 				.map(a -> a.getBroadcast())
 				.filter(Objects::nonNull)
 				.filter(x -> {
-                    if (x.getHostAddress().equals("0.0.0.0")) {
+                    if (x.getHostAddress().equals("0.0.0.0") || x.isLoopbackAddress()) {
                         return false;
                     }
                     return true;

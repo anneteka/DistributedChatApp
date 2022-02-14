@@ -35,6 +35,8 @@ public class Node {
 
     public Node() {
         role = Role.undecided;
+        this.bcsender = new BroadcastSender();
+        this.bclistener = BroadcastListener.getInstance();
         this.leaderElection = Bully.getInstance();
         this.peer = Peer.getInstacne();
     }
@@ -63,9 +65,7 @@ public class Node {
 
     }
 
-    public void discover(){
-        bcsender = new BroadcastSender();
-        bclistener = BroadcastListener.getInstance();
+    public void discover(){            
         Thread listenerThread = new Thread(() -> {
             bclistener.run();
         });

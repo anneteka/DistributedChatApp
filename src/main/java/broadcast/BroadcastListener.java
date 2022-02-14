@@ -1,9 +1,6 @@
 package broadcast;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.ObjectInput;
-import java.io.ObjectInputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
@@ -15,6 +12,7 @@ import java.util.List;
 import election.Bully;
 import election.data.PeerInfo;
 import election.network.UDP;
+import faulttolerance.FaultListener;
 
 
 public class BroadcastListener extends Thread{
@@ -25,6 +23,7 @@ public class BroadcastListener extends Thread{
 	static int port = 5024;
 	List<PeerInfo> selfInfo;
 	Peers peers;
+	FaultListener faultListener;
 
 	private static BroadcastListener instance = null;
 
@@ -58,6 +57,7 @@ public class BroadcastListener extends Thread{
 			peers = new Peers();
 			socket = new DatagramSocket(port);
 			setSelfInfo();
+			faultListener = FaultListener.getInstance();
 		}
 		catch (SocketException ex) {
 			System.out.println("Socket error: " + ex.getMessage());
@@ -114,40 +114,27 @@ public class BroadcastListener extends Thread{
 								PeerInfo newPeer = new PeerInfo();
 								newPeer.setIpAddr(address);
 								newPeer.setParticipent(true);
-
 								peers.addPeer(newPeer);
 
-								peers.setFlag(Peers.Flag.REPLY);
-
-								//This is for REPLY
-								//sendResponse(responseMessage, address, UDP.serializeToByteArray(peers));
-
 								// This is for ACK
-								for (int i = 0; i < getPeersSize(); i++) {
-									peers.setFlag(Peers.Flag.ACK);
+								peers.setFlag(Peers.Flag.ACK);
+								for (int i = 0; i < getPeersSize(); i++) {									
 									sendResponse(responseMessage, peers.getPeers().get(i).getIpAddr(), UDP.serializeToByteArray(peers));
 								}
+								FaultListener faultListener = FaultListener.getInstance();
+								Thread faultListenerlistenThread = new Thread(() -> {
+									faultListener.listen();
+								});								
+								Thread faultListenerrunThread = new Thread(() -> {
+									faultListener.run();
+								});								
+								faultListenerrunThread.start();
+								faultListenerlistenThread.start();
 
 							} else {
 							}//This Node is not the leader
 						}
 						break;
-
-						case  REPLY:		//1-1 Add the address as Leader Peer and update local Peers(This is a Client who joined) // this might have to be removed
-						{
-							peers.clear();
-
-							PeerInfo newLeader = new PeerInfo();
-							newLeader.setIpAddr(address);
-							newLeader.setLeader(true);
-							peers.addPeer(newLeader);
-							for (int i = 0; i < localPeers.getPeers().size(); i++)//TODO: deserialize object
-							{
-								peers.addPeer(localPeers.getPeers().get(i));
-							}
-						}
-						break;
-
 						case  ACK:			//1-1 Add the address as a new Client Peer(This is another Client)
 						{
 							peers.clear();
@@ -160,7 +147,11 @@ public class BroadcastListener extends Thread{
 							{
 								peers.addPeer(localPeers.getPeers().get(i));
 							}
-
+							//After receiving information from Learder, listen for ALIVE messages
+							Thread faultListenerThread = new Thread(() -> {
+								faultListener.listen();
+							});
+							faultListenerThread.start();
 							System.out.println("Connected Nodes are Begin : ");
 							for(int i = 0; i <this.getPeersSize(); i++){
 								System.out.println(this.getPeers().getPeers().get(i).getIpAddr().getHostAddress());
