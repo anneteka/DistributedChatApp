@@ -26,7 +26,7 @@ public class ServerMessageSender implements Runnable {
     // node id / node queue
     private HashMap<String, LinkedList<Message>> msgQueue;
     private HashMap<String, InetAddress> clientAddresses;
-    private final Integer CLIENT_PORT = 8080;
+    private final Integer CLIENT_PORT = 8081;
     private String serverId = "server-id";
     private BroadcastListener bcListener;
 
