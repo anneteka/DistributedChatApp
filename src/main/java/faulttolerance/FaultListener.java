@@ -80,17 +80,11 @@ public class FaultListener extends Thread{
                     }
                     break;
                 }
-                if(localFlag == Flag.ALIVE){
-                    
-                }
-                if(localFlag == Flag.REPLY){
-
-                }
             }
         }
         catch (SocketTimeoutException ex) {
             System.out.println("Socket timeout: " + ex.getMessage());
-            //Leader stoped sending messages, new election should be made
+            //TODO Leader stoped sending messages, new election should be made
         }
         catch (SocketException ex) {
 			System.out.println("Socket error: " + ex.getMessage());

@@ -126,7 +126,7 @@ public class BroadcastListener extends Thread{
 									faultListener.listen();
 								});								
 								Thread faultListenerrunThread = new Thread(() -> {
-									faultListener.run();
+									faultListener.run(address);
 								});								
 								faultListenerrunThread.start();
 								faultListenerlistenThread.start();
@@ -143,7 +143,7 @@ public class BroadcastListener extends Thread{
 							newLeader.setLeader(true);
 							peers.addPeer(newLeader);
 
-							for (int i = 0; i < localPeers.getPeers().size(); i++)//TODO: deserialize object
+							for (int i = 0; i < localPeers.getPeers().size(); i++)
 							{
 								peers.addPeer(localPeers.getPeers().get(i));
 							}
