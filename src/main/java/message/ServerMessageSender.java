@@ -75,8 +75,10 @@ public class ServerMessageSender implements Runnable {
     }
 
     public void addClient(String nodeId, InetAddress address){
-        clientAddresses.put(nodeId, address);
-        msgQueue.put(nodeId, new LinkedList<>());
+        if (!clientAddresses.containsKey(nodeId)) {
+            clientAddresses.put(nodeId, address);
+            msgQueue.put(nodeId, new LinkedList<>());
+        }
     }
 
     public void sendAcknowledgement(ConnectionMessage con) {
