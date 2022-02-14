@@ -11,7 +11,7 @@ import java.util.Random;
 public class ClientNode{
 
     public void start(String hostname, String id, String username, InetAddress server) throws SocketException {
-        DatagramSocket socket = new DatagramSocket();
+        DatagramSocket socket = new DatagramSocket(8080);
         ClientMessageSender s = new ClientMessageSender(socket, hostname, id, username, server);
         ClientMessageReceiver r = new ClientMessageReceiver(socket, s, id);
         Thread rt = new Thread(r);

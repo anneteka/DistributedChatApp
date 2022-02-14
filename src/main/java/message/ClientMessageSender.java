@@ -21,7 +21,7 @@ public class ClientMessageSender implements Runnable {
     private String hostname;
     private final String clientId;
     private final String username;
-    private LinkedList<Message> queue;
+    private LinkedList<Message> queue = new LinkedList<>();
     private InetAddress serverAddress;
 
     public ClientMessageSender(DatagramSocket s, String h, String clientId, String username, InetAddress server) {
@@ -69,10 +69,12 @@ public class ClientMessageSender implements Runnable {
         while (true) {
             try {
                 while (!in.ready()) {
-                    Thread.sleep(100);
+                    Thread.sleep(200);
+                    if (!queue.isEmpty())
+                        sendMessage(queue.getFirst());
                 }
                 String msg = in.readLine();
-                sendMessage(new Message("generated-message-id", msg, clientId, username));
+                queue.add(new Message("generated-message-id", msg, clientId, username));
                 // todo acknowledgement here
             } catch (Exception e) {
                 e.printStackTrace();

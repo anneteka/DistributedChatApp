@@ -1,12 +1,14 @@
 import node.Node;
 
+import java.io.IOException;
 import java.net.SocketException;
 
 public class MainApp {
-    public static void main(String[] args) throws SocketException {
+    public static void main(String[] args) throws IOException {
         Node appNode = new Node();
+        appNode.becomeServer();
         //Start the dynamic discovery
-        appNode.discover();
+//        appNode.discover();
         //appNode.becomeServer();
         //appNode.becomeClient();
         //Bully election has to be started first
@@ -14,5 +16,11 @@ public class MainApp {
         // set hostname here
         // should be set automatically sometime after connecting to the network
         //appNode.setHostname("DESKTOP-8DHRR0H");
+    }
+}
+class MainClient {
+    public static void main(String[] args) throws IOException {
+        Node appNode = new Node();
+        appNode.becomeClient();
     }
 }

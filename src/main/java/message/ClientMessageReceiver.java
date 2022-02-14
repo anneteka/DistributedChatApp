@@ -3,6 +3,7 @@ package message;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.util.HashSet;
+import java.util.Objects;
 
 public class ClientMessageReceiver implements Runnable {
     DatagramSocket socket;
@@ -24,11 +25,15 @@ public class ClientMessageReceiver implements Runnable {
                 DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
                 socket.receive(packet);
                 Message rec = new Message(packet.getData());
-                if (!received.contains(rec)) {
+                MessageAcknowledgement ack = new MessageAcknowledgement(packet.getData());
+                if (!rec.isEmpty() && received.contains(rec)) {
                     System.out.println(rec);
                     received.add(rec);
+                    sender.sendAcknowledgement(new MessageAcknowledgement(rec.getId(), clientId));
                 }
-                sender.sendAcknowledgement(new MessageAcknowledgement(rec.getId(), clientId));
+                if (!ack.isEmpty()){
+                    sender.getQueue().removeIf(message -> Objects.equals(message.getId(), ack.getMessageId()));
+                }
             } catch (Exception e) {
                 e.printStackTrace();
             }

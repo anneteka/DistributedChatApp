@@ -21,7 +21,7 @@ public class ServerMessageSender implements Runnable {
     private DatagramSocket socket;
     private HashMap<String, LinkedList<Message>> msgQueue;
     private HashMap<String, InetAddress> clientAddresses;
-    private final Integer CLIENT_PORT = 6611;
+    private final Integer CLIENT_PORT = 8080;
 
 
     public ServerMessageSender(DatagramSocket socket) {
@@ -34,7 +34,7 @@ public class ServerMessageSender implements Runnable {
     public void run() {
         while (true){
             try {
-                wait(100);
+                Thread.sleep(200);
                 for (Map.Entry<String, LinkedList<Message>> msgs: msgQueue.entrySet()) {
                     sendMessage(msgs.getKey(), msgs.getValue().getFirst());
                 }

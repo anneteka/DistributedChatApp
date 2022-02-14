@@ -22,9 +22,6 @@ public class ServerMessageReader implements Runnable{
         BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
         while (true) {
             try {
-                while (!in.ready()) {
-                    Thread.sleep(100);
-                }
                 String msg = in.readLine();
                 sender.addMessage(new Message("generated-message-id", msg, clientId, username));
                 // todo acknowledgement here

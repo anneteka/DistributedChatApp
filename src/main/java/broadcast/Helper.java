@@ -1,6 +1,7 @@
 package broadcast;
 
 import java.net.InetAddress;
+import java.net.InterfaceAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.util.ArrayList;
@@ -19,7 +20,7 @@ public class Helper {
 				continue;
 			}
 			networkInterface.getInterfaceAddresses().stream()
-				.map(a -> a.getAddress())
+				.map(InterfaceAddress::getAddress)
 				.filter(Objects::nonNull)
 				.forEach(addressList::add);
 		}

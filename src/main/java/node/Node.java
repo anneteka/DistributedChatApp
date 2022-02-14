@@ -14,6 +14,7 @@ import rom.PeerHelper;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.SocketException;
+import java.net.UnknownHostException;
 
 @AllArgsConstructor
 @Setter
@@ -117,13 +118,19 @@ public class Node {
 
     public void becomeClient() throws SocketException {
         role = Role.client;
-        if (serverNode != null) {
+//        if (serverNode != null) {
             // stop server thread so there is only one server always?
-        }
+//        }
         if (clientNode == null) {
             clientNode = new ClientNode();
         }
         // whatever will do smth better later
+        hostname = "DESKTOP-8DHRR0H";
+        try {
+            serverAddress = InetAddress.getByName(hostname);
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        }
         clientNode.start(hostname, deviceId, username, serverAddress);
     }
 

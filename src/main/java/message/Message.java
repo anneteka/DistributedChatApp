@@ -9,11 +9,19 @@ import java.io.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode
-public class Message {
+public class Message implements Serializable{
     private String id;
     private String msg;
     private String senderId;
     private String senderUsername;
+    private boolean isEmpty;
+
+    public Message(String id, String msg, String senderId, String senderUsername) {
+        this.id = id;
+        this.msg = msg;
+        this.senderId = senderId;
+        this.senderUsername = senderUsername;
+    }
 
     public Message(byte[] fromArray) {
         ByteArrayInputStream bis = new ByteArrayInputStream(fromArray);
@@ -22,7 +30,9 @@ public class Message {
             this.msg = m.getMsg();
             this.senderId = m.getSenderId();
             this.senderUsername = m.getSenderUsername();
+            isEmpty = false;
         } catch (IOException | ClassNotFoundException e) {
+            isEmpty = true;
             e.printStackTrace();
         }
         // ignore close exception

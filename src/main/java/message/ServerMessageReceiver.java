@@ -17,7 +17,7 @@ public class ServerMessageReceiver implements Runnable {
     DatagramSocket socket;
     ServerMessageSender sender;
     HashMap<String, LinkedList<Message>> msgQueue;
-    private byte[] buffer;
+    private byte[] buffer = new byte[1024];
 
     public ServerMessageReceiver(
             DatagramSocket socket, ServerMessageSender sender
@@ -32,26 +32,14 @@ public class ServerMessageReceiver implements Runnable {
             try {
                 DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
                 socket.receive(packet);
-                Message msg = null;
-                MessageAcknowledgement ack = null;
-                try {
-                    msg = new Message(packet.getData());
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                try {
-                    ack = new MessageAcknowledgement(packet.getData());
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                if (msg != null) {
+                Message msg = new Message(packet.getData());
+                MessageAcknowledgement ack = new MessageAcknowledgement(packet.getData());
+                if (!msg.isEmpty()) {
                     sender.addMessage(msg);
                 }
-                if (ack != null){
+                if (!ack.isEmpty()){
                     sender.removeMessage(ack.getClientId(), ack.getMessageId());
                 }
-
-
             } catch (Exception e) {
                 e.printStackTrace();
             }

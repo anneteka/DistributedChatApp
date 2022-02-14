@@ -2,6 +2,7 @@ package node;
 
 import lombok.Getter;
 import message.Message;
+import message.ServerMessageReader;
 import message.ServerMessageReceiver;
 import message.ServerMessageSender;
 
@@ -25,16 +26,21 @@ public class ServerNode {
     private String hostname;
 
     public ServerNode() throws IOException {
+        hostname = InetAddress.getLocalHost().getHostName();
+        System.out.println("Chat server started on host " + hostname);
         socket = new DatagramSocket(PORT);
         clientAddresses = new ArrayList<>();
         clientPorts = new ArrayList<>();
         existingClients = new HashSet<>();
-        DatagramSocket socket = new DatagramSocket();
         ServerMessageSender s = new ServerMessageSender(socket);
         ServerMessageReceiver r = new ServerMessageReceiver(socket, s);
+        ServerMessageReader reader = new ServerMessageReader(s, "server-node", "server-user");
         Thread rt = new Thread(r);
         Thread st = new Thread(s);
-        rt.start(); st.start();
+        Thread rdt = new Thread(reader);
+        rt.start();
+        st.start();
+        rdt.start();
     }
 
 //    public void run() {
