@@ -1,5 +1,6 @@
 package broadcast;
 
+import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
@@ -21,6 +22,12 @@ public class Helper {
 			networkInterface.getInterfaceAddresses().stream()
 				.map(a -> a.getAddress())
 				.filter(Objects::nonNull)
+				.filter(x -> {
+                    if (x.getHostAddress().equals("0.0.0.0") || x.isLoopbackAddress() || x instanceof Inet6Address) {
+                        return false;
+                    }
+                    return true;
+                })
 				.forEach(addressList::add);
 		}
 		return addressList;
@@ -38,7 +45,7 @@ public class Helper {
 				.map(a -> a.getBroadcast())
 				.filter(Objects::nonNull)
 				.filter(x -> {
-                    if (x.getHostAddress().equals("0.0.0.0") || x.isLoopbackAddress()) {
+                    if (x.getHostAddress().equals("0.0.0.0") || x.isLoopbackAddress() || x instanceof Inet6Address) {
                         return false;
                     }
                     return true;
