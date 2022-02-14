@@ -35,10 +35,14 @@ public class BroadcastListener extends Thread{
 	}
 
 	public PeerInfo getLeader(){
-		for(int i = 0; i < this.getPeersSize(); i++){
-			if(peers.getPeers().get(i).isLeader()){
-				return peers.getPeers().get(i);
+		if(Bully.getInstance().getLeader() == null) {
+			for (int i = 0; i < this.getPeersSize(); i++) {
+				if (peers.getPeers().get(i).isLeader()) {
+					return peers.getPeers().get(i);
+				}
 			}
+		}else{
+			return Bully.getInstance().getLeader();
 		}
 		return null;
 	}
@@ -49,6 +53,18 @@ public class BroadcastListener extends Thread{
 
 	public Peers getPeers(){
 		return peers;
+	}
+
+	public void setPeers(Peers peers){
+		this.peers.clear();
+		this.peers.setFlag(peers.getFlag());
+		for(int i = 0; i < peers.getPeers().size(); i++){
+			this.peers.addPeer(peers.getPeers().get(i));
+		}
+	}
+
+	public void removeClientFromPeers(PeerInfo info){
+			this.peers.removePeer(info);
 	}
 
 	private BroadcastListener() {
@@ -106,7 +122,7 @@ public class BroadcastListener extends Thread{
 					switch(localPeers.getFlag()) {
 						case BROADCAST:	//Reply to the Client with List of peers"(Only the Leader should reply)
 						{
-							PeerInfo leader = Bully.getInstance().getLeader();
+							PeerInfo leader = this.getLeader();
 
 							if (leader.isLeader()) {
 
@@ -118,18 +134,19 @@ public class BroadcastListener extends Thread{
 
 								// This is for ACK
 								peers.setFlag(Peers.Flag.ACK);
-								for (int i = 0; i < getPeersSize(); i++) {									
+								for (int i = 0; i < getPeersSize(); i++) {
 									sendResponse(responseMessage, peers.getPeers().get(i).getIpAddr(), UDP.serializeToByteArray(peers));
 								}
+								/*
 								FaultListener faultListener = FaultListener.getInstance();
 								Thread faultListenerlistenThread = new Thread(() -> {
 									faultListener.listen();
 								});								
 								Thread faultListenerrunThread = new Thread(() -> {
-									faultListener.run();
+									faultListener.run(address);
 								});								
 								faultListenerrunThread.start();
-								faultListenerlistenThread.start();
+								faultListenerlistenThread.start();*/
 
 							} else {
 							}//This Node is not the leader
@@ -143,15 +160,16 @@ public class BroadcastListener extends Thread{
 							newLeader.setLeader(true);
 							peers.addPeer(newLeader);
 
-							for (int i = 0; i < localPeers.getPeers().size(); i++)//TODO: deserialize object
+							for (int i = 0; i < localPeers.getPeers().size(); i++)
 							{
 								peers.addPeer(localPeers.getPeers().get(i));
 							}
+							/*
 							//After receiving information from Learder, listen for ALIVE messages
 							Thread faultListenerThread = new Thread(() -> {
 								faultListener.listen();
 							});
-							faultListenerThread.start();
+							faultListenerThread.start();*/
 							System.out.println("Connected Nodes are Begin : ");
 							for(int i = 0; i <this.getPeersSize(); i++){
 								System.out.println(this.getPeers().getPeers().get(i).getIpAddr().getHostAddress());
@@ -182,6 +200,24 @@ public class BroadcastListener extends Thread{
 		DatagramPacket packet = new DatagramPacket(msg, msg.length, address, port);	
 		System.out.println("Responding " + Message + " to " + address.getHostAddress());
 		socket.send(packet);
+	}
+
+	private static void sendResponse(InetAddress address, byte[] msg)
+			throws UnknownHostException, IOException {
+		DatagramPacket packet = new DatagramPacket(msg, msg.length, address, port);
+		System.out.println("Updating clients list in " + address.getHostAddress());
+		socket.send(packet);
+	}
+
+	public void sendACKForClients(){
+		try {
+			peers.setFlag(Peers.Flag.ACK);
+			for (int i = 0; i < getPeersSize(); i++) {
+				sendResponse(peers.getPeers().get(i).getIpAddr(), UDP.serializeToByteArray(peers));
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 }

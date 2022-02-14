@@ -26,6 +26,10 @@ public class Peers implements Serializable {
         this.peers.add(peer);
     }
 
+    public void removePeer(PeerInfo peer) {
+        this.peers.remove(peer);
+    }
+
     public void clear(){
         this.peers.clear();;
     }

@@ -32,9 +32,9 @@ public class FaultListener extends Thread{
 
     private FaultListener() {
         try {
-            socket = new DatagramSocket();
-            port = socket.getPort();       
+            socket = new DatagramSocket(0);
             socket.setSoTimeout(2000);
+            port = socket.getLocalPort();
         } catch (SocketException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -44,6 +44,8 @@ public class FaultListener extends Thread{
     public void run(InetAddress address) {		
         running = true;
         try {
+            port = socket.getPort();
+            System.out.println("Port : " + port);
             while (running) {                    
                 sendPacket(Flag.ALIVE.toString(), address, UDP.serializeToByteArray(Flag.ALIVE));
                 Thread.sleep(1000);
@@ -80,17 +82,11 @@ public class FaultListener extends Thread{
                     }
                     break;
                 }
-                if(localFlag == Flag.ALIVE){
-                    
-                }
-                if(localFlag == Flag.REPLY){
-
-                }
             }
         }
         catch (SocketTimeoutException ex) {
             System.out.println("Socket timeout: " + ex.getMessage());
-            //Leader stoped sending messages, new election should be made
+            //TODO Leader stoped sending messages, new election should be made
         }
         catch (SocketException ex) {
 			System.out.println("Socket error: " + ex.getMessage());

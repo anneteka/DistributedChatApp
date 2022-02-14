@@ -3,6 +3,8 @@ package node;
 import broadcast.BroadcastListener;
 import broadcast.BroadcastSender;
 import election.Bully;
+import faulttolerance.FaultToleranceClient;
+import faulttolerance.FaultToleranceServer;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -107,10 +109,14 @@ public class Node {
     public void startMessaging() throws IOException {
         this.deviceId = Bully.getInstance().getClientUUID().toString();
         if(leaderElection.amILeader()){
-            peer.setRole(PeerHelper.PeerRole.SERVER);
+            //FaultToleranceServer.getInstacne().syncRecive.start();
+            FaultToleranceServer.getInstacne().syncSend.start();
+            peer.setRoleAndLeader(PeerHelper.PeerRole.SERVER, bclistener.getLeader());
             becomeServer();
         }else {
-            peer.setRole(PeerHelper.PeerRole.CLIENT);
+            FaultToleranceClient.getInstacne().syncRecive.start();
+            FaultToleranceClient.getInstacne().syncSend.start();
+            peer.setRoleAndLeader(PeerHelper.PeerRole.CLIENT, bclistener.getLeader());
             becomeClient();
         }
 

@@ -1,5 +1,6 @@
 package rom;
 
+import election.data.PeerInfo;
 import node.Node;
 import rom.PeerHelper;
 
@@ -38,17 +39,16 @@ public class Peer {
     private Peer(){
         stopReceiveThread.set(false);
         stopSendThread.set(false);
-
         clock = new Clock();
     }
 
-    public void setRole(PeerHelper.PeerRole role){
+    public void setRoleAndLeader(PeerHelper.PeerRole role, PeerInfo leader){
         this.role = role;
 
         if(role == PeerHelper.PeerRole.CLIENT) {
-            client = new ClientMode();
+            client = new ClientMode(leader);
         }else if(role == PeerHelper.PeerRole.SERVER){
-            server = new ServerMode();
+            server = new ServerMode(leader);
         }
     }
 
@@ -70,10 +70,10 @@ public class Peer {
             while(!stopReceiveThread.get()){
                 if(role == PeerHelper.PeerRole.CLIENT) {
                     MessageInfo info = client.receiveData();
-                    readWrite.receive.print(info);
+                    readWrite.receive.print(client.format(info));
                 }else if(role == PeerHelper.PeerRole.SERVER){
                     MessageInfo info = server.receiveData();
-                    readWrite.receive.print(info);
+                    readWrite.receive.print(server.format(info));
                 }
             }
         }
@@ -86,6 +86,8 @@ public class Peer {
                 if(role == PeerHelper.PeerRole.CLIENT) {
                     MessageInfo info = readWrite.transmit.read(clock.getNewMessageId());
                     client.sendData(info);
+                }else if(role == PeerHelper.PeerRole.SERVER) {
+                    server.sendData();
                 }
 
                 try {

@@ -1,6 +1,8 @@
 package election;
 
+import broadcast.BroadcastListener;
 import broadcast.Helper;
+import broadcast.Peers;
 import election.data.ElectionInfo;
 import election.data.PeerInfo;
 import election.network.NetworkConstant;
@@ -21,11 +23,13 @@ public class Bully {
     private static final String BULLY_ALGO = "Bully Algorithm : ";
 
     private static PeerInfo myInfo = new PeerInfo();
-    private static PeerInfo leader = new PeerInfo();
+    private static PeerInfo leader = null;
 
     private ElectionInfo myElectionInfo = null;
 
-    private List<PeerInfo> Participants = new ArrayList<PeerInfo>();
+    //private List<PeerInfo> Participants = new ArrayList<PeerInfo>();
+    Peers peers;
+
     private PollElectionData pollElectionData;
 
     private DatagramSocket receiverSocket = null;
@@ -49,6 +53,7 @@ public class Bully {
             pollElectionData = new PollElectionData();
             pollElectionData.start();
 
+            peers = new Peers();
             System.out.println(BULLY_ALGO + "My unique Id : " + myInfo.getUniqueIdentifier());
         } catch (SocketException e) {
             e.printStackTrace();
@@ -87,6 +92,7 @@ public class Bully {
             bullied = false;
             myElectionInfo.getPeerInfo().setParticipent(false);
             myElectionInfo.getPeerInfo().setLeader(true);
+            peers.clear();
 
             myElectionInfo.setElectionSate(ElectionInfo.Election.REGISTRATION_START);
             serializeAndSendUDP(myElectionInfo, Helper.getBroadcastAddressList(), true);
@@ -97,6 +103,7 @@ public class Bully {
                 myElectionInfo.setElectionSate(ElectionInfo.Election.LEADER);
                 serializeAndSendUDP(myElectionInfo, Helper.getBroadcastAddressList(), true);
                 leader = myElectionInfo.getPeerInfo();
+                sendACKforClients();
                 System.out.println(BULLY_ALGO + "Not Bullied, Announce as leader with IP : " + myElectionInfo.getPeerInfo().getIpAddr());
             }
 
@@ -110,6 +117,11 @@ public class Bully {
     public void stopPolling() {
         poll = false;
         receiverSocket.close();
+    }
+
+    private void sendACKforClients(){
+        BroadcastListener.getInstance().setPeers(peers);
+        BroadcastListener.getInstance().sendACKForClients();
     }
 
     private void processReceivedData(ElectionInfo info){
@@ -127,7 +139,7 @@ public class Bully {
         }
         else if(ElectionInfo.Election.REGISTER == info.getElectionSate()){
             if(myElectionInfo.getElectionSate() == ElectionInfo.Election.REGISTRATION_START) {
-                Participants.add(info.getPeerInfo());
+                peers.addPeer(info.getPeerInfo());
                 System.out.println(BULLY_ALGO + "Register Participant with port and IP : " + info.getPeerInfo().getPort() + "\t" + info.getPeerInfo().getIpAddr());
             }
         }else if(ElectionInfo.Election.BULLY_FOR_ELECTION == info.getElectionSate()) {
@@ -136,7 +148,7 @@ public class Bully {
             myElectionInfo.getPeerInfo().setLeader(false);
 
             myElectionInfo.setElectionSate(ElectionInfo.Election.IDLE);
-            Participants.clear();
+            peers.clear();
             System.out.println(BULLY_ALGO + "Bullied, Clearing Participants, New peer will takeover : "  +  info.getPeerInfo().getIpAddr());
         }
     }
@@ -153,7 +165,7 @@ public class Bully {
 
     private boolean bullyAndStartElection(ElectionInfo info)
     {
-        if(myElectionInfo.getPeerInfo().getUniqueIdentifier().compareTo(info.getPeerInfo().getUniqueIdentifier()) > 0)
+        if(shouldIbully(info))
         {
             myElectionInfo.getPeerInfo().setParticipent(false);
             myElectionInfo.getPeerInfo().setLeader(true);
@@ -167,6 +179,14 @@ public class Bully {
         }
 
         return false;
+    }
+
+    private boolean shouldIbully(ElectionInfo info){
+        boolean infoIsDiffernt = myElectionInfo.getPeerInfo().getUniqueIdentifier().compareTo(info.getPeerInfo().getUniqueIdentifier()) != 0;
+        boolean electionStartedByMe = myElectionInfo.getElectionSate() == ElectionInfo.Election.REGISTRATION_START;
+        boolean bully = myElectionInfo.getPeerInfo().getUniqueIdentifier().compareTo(info.getPeerInfo().getUniqueIdentifier()) > 0;
+
+        return ((infoIsDiffernt && electionStartedByMe) || bully);
     }
 
     private void serializeAndSendUDP(Object obj, List<InetAddress> address, boolean broadcast)
