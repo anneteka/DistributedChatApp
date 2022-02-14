@@ -42,7 +42,8 @@ public class ServerMessageSender implements Runnable {
     public void run() {
         Peers nodes = bcListener.getPeers();
         for (PeerInfo peer:nodes.getPeers()) {
-            addClient(peer.getUniqueIdentifier().toString(), peer.getIpAddr());
+            if(!peer.isLeader())
+                addClient(peer.getUniqueIdentifier().toString(), peer.getIpAddr());
         }
         while (true){
             try {

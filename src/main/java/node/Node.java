@@ -89,7 +89,7 @@ public class Node {
             System.out.println("\nNo other Node was discovered");
             startElection();
         }
-
+        
         startMessaging();
     }
 
@@ -105,6 +105,7 @@ public class Node {
     }
 
     public void startMessaging() throws IOException {
+        this.deviceId = Bully.getInstance().getClientUUID().toString();
         if(leaderElection.amILeader()){
             peer.setRole(PeerHelper.PeerRole.SERVER);
             becomeServer();
