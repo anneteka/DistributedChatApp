@@ -26,6 +26,7 @@ public class FaultToleranceServer {
 
     private FaultToleranceServer(){
         try {
+            receivedPeers = new Peers();
             sender = new DatagramSocket();
             receiver =  new DatagramSocket(NetworkConstant.leaderMessageRecevierSyncPort);
         } catch (IOException e) {

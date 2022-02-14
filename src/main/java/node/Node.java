@@ -100,6 +100,8 @@ public class Node {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+
+        System.out.println("Leader in the Group chat : " + bclistener.getLeader().getIpAddr());
     }
 
     public void startMessaging(){

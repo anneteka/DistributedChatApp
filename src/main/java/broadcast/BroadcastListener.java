@@ -35,15 +35,13 @@ public class BroadcastListener extends Thread{
 	}
 
 	public PeerInfo getLeader(){
-		if(Bully.getInstance().getLeader() == null) {
-			for (int i = 0; i < this.getPeersSize(); i++) {
-				if (peers.getPeers().get(i).isLeader()) {
-					return peers.getPeers().get(i);
-				}
+
+		for (int i = 0; i < this.getPeersSize(); i++) {
+			if (peers.getPeers().get(i).isLeader()) {
+				return peers.getPeers().get(i);
 			}
-		}else{
-			return Bully.getInstance().getLeader();
 		}
+
 		return null;
 	}
 
@@ -130,8 +128,16 @@ public class BroadcastListener extends Thread{
 								PeerInfo newPeer = new PeerInfo();
 								newPeer.setIpAddr(address);
 								newPeer.setParticipent(true);
-								peers.addPeer(newPeer);
 
+								boolean doesNotContain = true;
+								for(int i = 0; i < this.getPeersSize(); i++){
+									if(this.getPeers().getPeers().get(i).getIpAddr().equals(address.getHostAddress())){
+										doesNotContain = false;
+									}
+								}
+								if(doesNotContain) {
+									peers.addPeer(newPeer);
+								}
 								// This is for ACK
 								peers.setFlag(Peers.Flag.ACK);
 								for (int i = 0; i < getPeersSize(); i++) {
@@ -155,10 +161,11 @@ public class BroadcastListener extends Thread{
 						case  ACK:			//1-1 Add the address as a new Client Peer(This is another Client)
 						{
 							peers.clear();
+							/*
 							PeerInfo newLeader = new PeerInfo();
 							newLeader.setIpAddr(address);
 							newLeader.setLeader(true);
-							peers.addPeer(newLeader);
+							peers.addPeer(newLeader);*/
 
 							for (int i = 0; i < localPeers.getPeers().size(); i++)
 							{
@@ -172,9 +179,11 @@ public class BroadcastListener extends Thread{
 							faultListenerThread.start();*/
 							System.out.println("Connected Nodes are Begin : ");
 							for(int i = 0; i <this.getPeersSize(); i++){
-								System.out.println(this.getPeers().getPeers().get(i).getIpAddr().getHostAddress());
+								String s = this.getPeers().getPeers().get(i).isLeader() ? "LEADER " : "CLIENT ";
+								System.out.println(s + this.getPeers().getPeers().get(i).getIpAddr().getHostAddress());
 							}
 							System.out.println("Connected Nodes are End: ");
+							System.out.println("Leader in the Group chat : " + this.getLeader().getIpAddr());
 						}
 						break;
 					}

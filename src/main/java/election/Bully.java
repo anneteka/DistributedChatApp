@@ -81,10 +81,11 @@ public class Bully {
         return myInfo.getUniqueIdentifier();
     }
 
-    public PeerInfo getLeader()
+    /*
+    private PeerInfo getLeader()
     {
         return leader;
-    }
+    }*/
 
     public void startElection() {
         try {
@@ -120,6 +121,7 @@ public class Bully {
     }
 
     private void sendACKforClients(){
+        peers.addPeer(leader);
         BroadcastListener.getInstance().setPeers(peers);
         BroadcastListener.getInstance().sendACKForClients();
     }
