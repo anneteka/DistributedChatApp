@@ -129,6 +129,7 @@ public class Node {
         role = Role.client;
         //server address should be reassigned if server changed
         serverAddress = bclistener.getLeader().getIpAddr();
+
         if (clientNode == null) {
             clientNode = new ClientNode();
             clientNode.start(hostname, deviceId, username, serverAddress);

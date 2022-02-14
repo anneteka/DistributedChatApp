@@ -8,9 +8,8 @@ public class MainApp {
     public static void main(String[] args) throws IOException {
         Node appNode = new Node();
         System.out.println(Helper.getBroadcastAddressList());
-        appNode.becomeServer();
         //Start the dynamic discovery
-//        appNode.discover();
+        appNode.discover();
         //appNode.becomeServer();
         //appNode.becomeClient();
         //Bully election has to be started first
